@@ -57,10 +57,8 @@ class Board:
         dfs = DepthFirstSearch(self)
         dfs.flood_fill_default(player, row, col)
         if EMPTY in dfs.reached:
-            #print("reached EMPTY: " + str((row, col)))
             return True
         else:
-            #print("suicap " + str((row, col)))
             return self.is_capture(player, row, col)
 
     def is_capture(self, player, row, col):
@@ -71,14 +69,9 @@ class Board:
         for (valid, (ar, ac)) in self.get_adjacent(row, col):
             if valid and self.cell[row][col] != self.cell[ar][ac] and self.cell[ar][ac] != EMPTY:
                 dfs.refresh()
-                #dfs.flood_fill_after_move(player, row, col, ar, ac)
                 dfs.flood_fill(ar, ac)
                 if EMPTY not in dfs.reached:
-                    #print("captured starting from " + str((ar, ac)))
-                    #print("dfs.reached: " + str(dfs.reached))
-                    #print("dfs.matched: " + str(dfs.matched))
                     is_cap = True
-        #print "is_cap: " + str(is_cap)
         self.cell[row][col] = prev_color
         return is_cap
 
@@ -153,13 +146,11 @@ class Board:
         else: return True
 
     def legal_moves(self, player):
-        #print("Legal moves for player " + str(player))
         legal = []
         for (ri, row) in enumerate(self.cell):
             for (ci, cell) in enumerate(row):
                 if cell == EMPTY and self.not_suicide(player, ri, ci) and self.not_ko(player, ri, ci):
                     legal.append((ri, ci))
-        #print(legal)
         return legal
 
     def collapse_array(self):
@@ -231,15 +222,12 @@ class DepthFirstSearch:
                         self.search_step (fillval, target)
             else:
                 reached = self.board.cell[row][col]
-                #print("reached " + str((row, col)) + " = " + str(reached))
                 if reached not in self.reached:
                     self.reached.append(reached)
 
     def flood_fill(self, row, col):
-        #print("flood fill from " + str((row, col)))
         fillval = self.board.cell[row][col]
         self.search_step(fillval, (row, col))
-        #print(self.reached)
         
     def flood_fill_default(self, hcolor, row, col):
         prev_val = self.board.cell[row][col]
@@ -247,13 +235,6 @@ class DepthFirstSearch:
         self.search_step(hcolor, (row, col))
         self.board.cell[row][col] = prev_val
         
-    def flood_fill_after_move (self, mcolor, mrow, mcol, srow, scol):
-        fillval = self.board.cell[srow][scol]
-        prev_val = self.board.cell[mrow][mcol]
-        self.board.cell[mrow][mcol] = mcolor
-        self.search_step(fillval, (srow, scol))
-        self.board.cell[mrow][mcol] = prev_val
-
     def refresh(self):
         self.visited = [[False for cell in row] for row in self.board.cell]
         self.reached = []

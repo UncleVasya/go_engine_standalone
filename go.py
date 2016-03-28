@@ -152,135 +152,6 @@ class Go(Game):
         if turn == 0: return [0, 1]
         else: return [(turn + 1) % 2]
 
-#    def board_symbol(self, cell):
-#        if cell == EMPTY:
-#            return ". "
-#        elif cell == ACTIVE:
-#            return "! "
-#        elif cell == PLAYER1:
-#            return "o "
-#        elif cell == PLAYER2:
-#            return "x "
-#        elif cell == DRAW:
-#            return "- "
-#
-#    def text_board(self):
-#        count = 0
-#        print ("\n")
-#        output = ""
-#        for cell in self.field:
-#            if count >= field_size:
-#                print(output)
-#                output=""
-#                count = 0
-#            output += self.board_symbol(cell)
-#            count += 1
-#        print(output)
-#
-#    def text_macroboard(self):
-#        count = 0
-#        print ("\n")
-#        output = ""
-#        for cell in self.macroboard:
-#            if count >= macroboard_size:
-#                print(output)
-#                output=""
-#                count = 0
-#            output += self.board_symbol(cell)
-#            count += 1
-#        print(output)
-#        print("")
-#
-#    def player_cell (self, player):
-#        if player == 0: return PLAYER1 
-#        else: return PLAYER2
-#
-#    def clear_active_macroboard(self):
-#        for count in range(0, len(self.macroboard)):
-#            if self.macroboard[count] == ACTIVE:
-#                self.macroboard[count] = EMPTY
-#
-#    def get_board_cell (self, row, col):
-#        return self.field[int(row) * field_size + int(col)]
-#
-#    def get_macroboard_cell (self, row, col):
-#        return self.macroboard[int(row) * macroboard_size + int(col)]
-#
-#    def cell_is_full (self, row, col):
-#        offr = row * macroboard_size
-#        offc = col * macroboard_size
-#        result = True
-#        for cr in range(0, macroboard_size):
-#            for cc in range (0, macroboard_size):
-#                result = result and (self.get_board_cell(offr + cr, offc + cc) != EMPTY)
-#        return result
-#
-#    def macroboard_full (self):
-#        result = True
-#        for cell in self.macroboard:
-#            if cell == EMPTY or cell == ACTIVE:
-#                result = False
-#        return result
-#
-#    def macroboard_status (self):
-#        win = EMPTY
-#        for (r0, c0), (r1, c1), (r2, c2) in victory_lines:
-#            p0 = self.get_macroboard_cell(r0, c0)
-#            p1 = self.get_macroboard_cell(r1, c1)
-#            p2 = self.get_macroboard_cell(r2, c2)
-#            if p0 != EMPTY and p0 == p1 and p0 == p2:
-#                win = p0
-#        if win == EMPTY or win == ACTIVE:
-#            if self.macroboard_full():
-#                return DRAW
-#            else:
-#                return EMPTY
-#        else:
-#            return win
-#        
-#    def sub_board_status (self, row, col):
-#        offr = row * macroboard_size
-#        offc = col * macroboard_size
-#        win = EMPTY
-#        for (r0, c0), (r1, c1), (r2, c2) in victory_lines:
-#            p0 = self.get_board_cell(offr + r0, offc + c0)
-#            p1 = self.get_board_cell(offr + r1, offc + c1)
-#            p2 = self.get_board_cell(offr + r2, offc + c2)
-#            if p0 != EMPTY and p0 == p1 and p0 == p2:
-#                win = p0
-#        if win == EMPTY and self.cell_is_full(row, col):
-#            return DRAW
-#        else:
-#            return win
-#        
-#    
-#    def activate_all (self):
-#        for i, c in enumerate (self.macroboard):
-#            ir = int (i / macroboard_size)
-#            ic = i % macroboard_size
-#            if c == EMPTY and not self.cell_is_full(ir, ic):
-#                self.macroboard[i] = ACTIVE
-#
-#    def update_macroboard (self, row, col):
-#        self.clear_active_macroboard()
-#        ur = int(row / macroboard_size)
-#        uc = int(col / macroboard_size)
-#        self.macroboard[ur * macroboard_size + uc] = self.sub_board_status (ur, uc)
-##        print("sub_board_status: " + str(self.sub_board_status (ur, uc)) + " " + str ((ur, uc)))
-#        mbr = row % macroboard_size
-#        mbc = col % macroboard_size
-#        if self.macroboard[mbr * macroboard_size + mbc] == EMPTY:
-#            #print ("Activating cell" + str((mbr, mbc)))
-#            self.macroboard[mbr * macroboard_size + mbc] = ACTIVE
-#        else:
-#            #print ("Activating all\n")
-#            self.activate_all()
-#        #print(self.string_field(self.macroboard) + "\n")
-#
-#    def is_legal(self, row, col):
-#        mbr = int(row / macroboard_size)
-#        mbc = int(col / macroboard_size)
-#        return self.get_macroboard_cell (mbr, mbc) == ACTIVE and self.get_board_cell(row, col) == EMPTY
 
     def place_move(self, move):
         self.board.text_board()
@@ -290,9 +161,6 @@ class Go(Game):
         if player_id == 0:
             owner = board.PLAYER1
             
-        #print("player = " + str(player))
-        #print("player_cell = " + str(self.player_cell(player)))
-        #if self.is_legal (row, col):
         if (row, col) in self.board.legal_moves(owner):
             self.board.place_move(owner, row, col)
         else:
@@ -304,8 +172,6 @@ class Go(Game):
         """ Execute player orders and handle conflicts
         """
         player = self.bots_to_play(self.turn)[0]
-        #print(str(self.orders))
-        #print("player " + str(player))
         if self.is_alive(player):
             if len(self.orders[player]) > 0:
                 self.place_move (self.orders[player][0])
@@ -357,8 +223,6 @@ class Go(Game):
         """ Called by engine at the end of the game """
 
         self.score = self.score_game()
-#        self.text_board()
-#        self.text_macroboard()
         self.calc_significant_turns()
         for i, s in enumerate(self.score):
             self.score_history[i].append(s)
@@ -390,7 +254,6 @@ class Go(Game):
                 self.score_history[i].extend([last_score]*(self.turn-score_len))
                 self.score_history[i].append(s)
         self.calc_significant_turns()
-#        self.update_scores()
 
         ### append turn to replay
         self.replay_data.append( self.get_state_changes(self.time_per_move) )
@@ -421,8 +284,6 @@ class Go(Game):
             Used by engine to send bots startup info on turn 0
         """
         result = []
-#        result.append(['settings move', 0])
-#        result.append(['settings round', 0])
         result.append(['settings timebank', self.timebank])
         result.append(['settings time_per_move', self.time_per_move])
         result.append(['settings player_names', ','.join(self.use_player_names)])
@@ -433,8 +294,6 @@ class Go(Game):
         result.append(['settings field_height', self.field_height])
 
         result.append(['settings player_seed', self.player_seed])
-#        result.append(['settings num_players', self.num_players])
-#        message = self.render_changes(player, self.timebank)
 
         result.append([]) # newline
         pen = '\n'.join(' '.join(map(str,s)) for s in result)
@@ -470,7 +329,6 @@ class Go(Game):
     def do_moves(self, player, moves):
         """ Called by engine to give latest player orders """
         orders, valid, ignored, invalid = self.parse_orders(player, moves)
-#        orders, valid, ignored, invalid = self.validate_orders(player, orders, valid, ignored, invalid)
         self.orders[player] = orders
         return valid, ['%s # %s' % ignore for ignore in ignored], ['%s # %s' % error for error in invalid]
 

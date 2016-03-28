@@ -152,7 +152,6 @@ def run_game(game, botcmds, options):
 
             # send game state to each player
             for b, bot in enumerate(bots):
-                #print((b, bot))
                 if game.is_alive(b):
                     if turn == 0:
                         start = game.get_player_start(b) #+ 'ready\n'
@@ -164,10 +163,7 @@ def run_game(game, botcmds, options):
                         bot_time = turntime
                         if fischer_time:
                             bot_time = timebank[b] / 1000
-                        #print(fischer_time)
-                        #print(bot_time)
                         state = game.get_player_state(b, bot_time)
-                        #state = 'turn ' + str(turn) + '\n' + game.get_player_state(b, bot_time) + 'go\n'
                         bot.write(state)
                         if input_logs and input_logs[b]:
                             input_logs[b].write(state)
@@ -188,10 +184,6 @@ def run_game(game, botcmds, options):
             else:
                 simul_num = 1
             
-            #if options.get('serial', False):
-                #simul_num = int(options['serial']) # int(True) is 1
-            #else:
-                #simul_num = len(bots)
 
             times_used = [0 for b in bots]
             bot_moves = [[] for b in bots]
@@ -200,7 +192,6 @@ def run_game(game, botcmds, options):
             bot_list = [(b, bot) for b, bot in enumerate(bots)
                         if game.is_alive(b)]
             random.shuffle(bot_list)
-            #print(bot_list)
 
             if (turn > 0) or ack_turn_zero:
 
@@ -208,7 +199,6 @@ def run_game(game, botcmds, options):
                     pnums, pbots = zip(*bot_list[group_num:group_num + simul_num])
                     if fischer_time: # Note that this assumes parallel bots and fischer time are not going to be combined. Some extra effort needed to change this.
                         group_timelimit = timebank[pnums[0]] / 1000
-                    #print(group_timelimit)
                     moves, errors, status, times = get_moves(game, pbots, pnums, 
                             bot_indices, group_timelimit, timebank, fischer_time, turn)
                     for p, b in enumerate(pnums):
@@ -216,11 +206,9 @@ def run_game(game, botcmds, options):
                         error_lines[b] = errors[p]
                         statuses[b] = status[p]
                         times_used[b] = times[p]
-                    #print (times, times_used, pnums)
                 if fischer_time:
                     for i, time_used in enumerate(times_used):
                         timebank[i] -= time_used * 1000
-                    #print (timebank)
     
                 # handle any logs that get_moves produced
                 for b, errors in enumerate(error_lines):
@@ -316,8 +304,6 @@ def run_game(game, botcmds, options):
                     verbose_log.write(' {0:^{1}}'.format(values, max(len(key), len(str(values)))))
                 verbose_log.write('\n')
 
-            #alive = [game.is_alive(b) for b in range(len(bots))]
-            #if sum(alive) <= 1:
             if game.game_over():
                 break
 
@@ -352,7 +338,6 @@ def run_game(game, botcmds, options):
         error = traceback.format_exc()
         if verbose_log:
             verbose_log.write(traceback.format_exc())
-        # error = str(e)
     finally:
         if end_wait:
             for bot in bots:
