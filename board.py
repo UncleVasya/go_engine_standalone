@@ -9,13 +9,15 @@ ADJACENT = [
     (0, -1)
 ]
 
+KO_BOARDS = 101
+
 class Board:
 
     def __init__(self, width, height):
         self.width = width
         self.height = height
         self.cell = [[EMPTY for col in range (0, width)] for row in range(0, height)]
-        self.prev_cells = [None for i in range (0, 11)]
+        self.prev_cells = [None for i in range (0, KO_BOARDS)]
 
     def int_to_cell(self, i):
         if i == 0:
