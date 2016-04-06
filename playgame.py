@@ -102,7 +102,7 @@ def main(argv):
 
     # maximum number of turns that the game will be played
     parser.add_option("-t", "--turns", dest="turns",
-                      default=1000, type="int",
+                      default=500, type="int",
                       help="Number of turns in the game")
 
     parser.add_option("--serial", dest="serial",
@@ -110,10 +110,10 @@ def main(argv):
                       help="Run bots in serial, instead of parallel.")
 
     parser.add_option("--turntime", dest="turntime",
-                      default=1000, type="int",
+                      default=200, type="int",
                       help="Amount of time to give each bot, in milliseconds")
     parser.add_option("--loadtime", dest="loadtime",
-                      default=3000, type="int",
+                      default=10000, type="int",
                       help="Amount of time to give for load, in milliseconds")
     parser.add_option("-r", "--rounds", dest="rounds",
                       default=1, type="int",
