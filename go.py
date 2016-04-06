@@ -18,6 +18,7 @@ except ImportError:
 
 class Go(Game):
     def __init__(self, options=None):
+        self.last_move = None
         self.cutoff = None
         self.timebank = 0
         if 'timebank' in options:
@@ -99,6 +100,11 @@ class Go(Game):
         changes.extend([['update game round', int(self.turn / 2)]])
         changes.extend([['update game move', self.turn]])
         changes.extend([['update game field', self.board.to_csv()]])
+        if self.last_move:
+            row, col = self.last_move
+            changes.extend([['update game last_move', row, col]])
+        elif self.turn > 1:
+            changes.extend([['update game last_move pass']])
         return changes
 
     def parse_orders(self, player, lines):
@@ -127,6 +133,7 @@ class Go(Game):
                 continue
             elif data[0] == 'pass':
                 print("PASS!")
+                self.last_move = None
                 self.consecutive_passes += 1
                 continue
             else:
@@ -161,11 +168,13 @@ class Go(Game):
             owner = board.PLAYER1
 
         if (row, col) in self.board.legal_moves(owner):
+            self.last_move = (row, col)
             self.consecutive_passes = 0
             self.board.place_move(owner, row, col)
             self.board.push_state()
         else:
             print("PASS due to illegal move! " + str(move))
+            self.last_move = None
             self.consecutive_passes += 1
         self.board.text_board()
 #        print(self.board.to_csv())
