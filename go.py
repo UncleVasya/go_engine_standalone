@@ -36,7 +36,7 @@ class Go(Game):
 #        self.field = [ EMPTY for j in range(0, self.field_width * self.field_height) ]
 
         self.turn = 0
-        self.turn_limit = options.get('turn_limit', 800)
+        self.turn_limit = options.get('turns', 500)
         self.num_players = 2 # map_data["players"]
         self.player_to_begin = randint(0, self.num_players)
         # used to cutoff games early
@@ -295,6 +295,7 @@ class Go(Game):
         result.append(['settings field_height', self.field_height])
 
         result.append(['settings player_seed', self.player_seed])
+        result.append(['settings max_rounds', int(self.turn_limit / 2)])
 
         result.append([]) # newline
         pen = '\n'.join(' '.join(map(str,s)) for s in result)
