@@ -130,7 +130,6 @@ class Go(Game):
                 self.consecutive_passes += 1
                 continue
             else:
-                self.consecutive_passes = 0
                 row, col = data[1:]
 
             # validate the data types
@@ -162,10 +161,12 @@ class Go(Game):
             owner = board.PLAYER1
 
         if (row, col) in self.board.legal_moves(owner):
+            self.consecutive_passes = 0
             self.board.place_move(owner, row, col)
             self.board.push_state()
         else:
-            print("Illegal move! " + str(move))
+            print("PASS due to illegal move! " + str(move))
+            self.consecutive_passes += 1
         self.board.text_board()
 #        print(self.board.to_csv())
 
@@ -197,7 +198,7 @@ class Go(Game):
         elif len(self.remaining_players()) == 1:
             self.cutoff = 'lone survivor'
             return True
-        elif self.consecutive_passes > 2:
+        elif self.consecutive_passes > 1:
             self.cutoff = "agreement"
             return True
         elif self.turn > self.turn_limit:
