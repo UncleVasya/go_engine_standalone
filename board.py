@@ -10,6 +10,7 @@ ADJACENT = [
 ]
 
 KO_BOARDS = 101
+KOMI = 7.5
 
 class Board:
 
@@ -130,6 +131,7 @@ class Board:
                     scores[0] += 1
                 elif cell == 2:
                     scores[1] += 1
+        scores[1] += KOMI
         print("scores = " + str(scores))
         return scores
                 
