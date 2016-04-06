@@ -111,7 +111,7 @@
 		//if (iter_frame != 0)
 			V.fillRect(orect.x,orect.y,orect.width,orect.height);
         V.closePath();
-        if (cell != 0){
+        if (cell != 0 && cell != -1){
 		    alpha = fade(0.4, 1.0, 2, (the_turn - iter_frame));
 		    set_board_color(cell, alpha);
             V.beginPath();
@@ -123,7 +123,7 @@
 		if (iter_frame != 0)
         //V.beginPath();
 	    //V.fillRect(rect.x,rect.y,rect.width,rect.height);
-        if (cell == 0){
+        if (cell == 0 || cell == -1){
             draw_plus(orect);
         }
     }

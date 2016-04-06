@@ -208,7 +208,7 @@ class Board:
         ko_cells = []
         for (ir, row) in enumerate(self.cell):
             for (ic, cell) in enumerate(row):
-                if cell == EMPTY and not self.not_ko(player, ir, ic):
+                if cell == EMPTY and not self.not_ko(player + 1, ir, ic):
                     ko_cells.append((ir, ic))
         for (row, col) in ko_cells:
             self.cell[row][col] = KO
