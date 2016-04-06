@@ -84,7 +84,7 @@ class Go(Game):
     def render_changes(self, player, time_to_move):
         """ Create a string which communicates the updates to the state
         """
-        updates = self.get_state_changes(time_to_move)
+        updates = self.get_state_changes(player, time_to_move)
         visible_updates = []
         # next list all transient objects
         for update in updates:
@@ -92,14 +92,16 @@ class Go(Game):
         visible_updates.append([]) # newline
         return '\n'.join(' '.join(map(str,s)) for s in visible_updates)
 
-    def get_state_changes(self, time_to_move):
+    def get_state_changes(self, player, time_to_move):
         """ Return a list of all transient objects on the map.
 
         """
         changes = []
         changes.extend([['update game round', int(self.turn / 2)]])
         changes.extend([['update game move', self.turn]])
+        self.board.mark_ko(player)
         changes.extend([['update game field', self.board.to_csv()]])
+        self.board.unmark_ko()
         if self.last_move:
             row, col = self.last_move
             changes.extend([['update game last_move', row, col]])
@@ -224,7 +226,7 @@ class Go(Game):
         self.game_started = True
         
         ### append turn 0 to replay
-        self.replay_data.append( self.get_state_changes(self.time_per_move) )
+        self.replay_data.append( self.get_state_changes(0, self.time_per_move) )
         result = []
 
     def score_game(self):
@@ -237,7 +239,7 @@ class Go(Game):
         self.calc_significant_turns()
         for i, s in enumerate(self.score):
             self.score_history[i].append(s)
-        self.replay_data.append( self.get_state_changes(self.time_per_move) )
+        self.replay_data.append( self.get_state_changes(0, self.time_per_move) )
 
         # check if a rule change lengthens games needlessly
         if self.cutoff is None:
@@ -267,7 +269,7 @@ class Go(Game):
         self.calc_significant_turns()
 
         ### append turn to replay
-        self.replay_data.append( self.get_state_changes(self.time_per_move) )
+        self.replay_data.append( self.get_state_changes(0, self.time_per_move) )
 
     def calc_significant_turns(self):
         ranking_bots = [sorted(self.score, reverse=True).index(x) for x in self.score]
@@ -285,7 +287,7 @@ class Go(Game):
 
             Used by engine for streaming playback
         """
-        updates = self.get_state_changes()
+        updates = self.get_state_changes(0, 0)
         updates.append([]) # newline
         return '\n'.join(' '.join(map(str,s)) for s in updates)
 

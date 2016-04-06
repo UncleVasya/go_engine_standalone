@@ -1,6 +1,6 @@
 import copy
 
-EMPTY, PLAYER1, PLAYER2, KO, LIBERTY = range(0, 5)
+EMPTY, PLAYER1, PLAYER2, KO, LIBERTY = [0, 1, 2, -1, 3]
 
 ADJACENT = [
     (-1, 0),
@@ -191,6 +191,8 @@ class Board:
             return "1"
         elif cell == PLAYER2:
             return "2"
+        elif cell == KO:
+            return "-1"
         else:
             print("WARNING: cell_for_csv received " + str(cell))
             return "0"
@@ -201,6 +203,21 @@ class Board:
             for cell in row:
                 arr.append(self.cell_for_csv(cell))
         return ",".join(arr)
+
+    def mark_ko(self, player):
+        ko_cells = []
+        for (ir, row) in enumerate(self.cell):
+            for (ic, cell) in enumerate(row):
+                if cell == EMPTY and not self.not_ko(player, ir, ic):
+                    ko_cells.append((ir, ic))
+        for (row, col) in ko_cells:
+            self.cell[row][col] = KO
+
+    def unmark_ko(self):
+        for (ir, row) in enumerate(self.cell):
+            for (ic, col) in enumerate(row):
+                if self.cell[ir][ic] == KO:
+                    self.cell[ir][ic] = EMPTY
 
 
 # End of Board class
