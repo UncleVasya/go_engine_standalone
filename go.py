@@ -160,9 +160,10 @@ class Go(Game):
         owner = board.PLAYER2
         if player_id == 0:
             owner = board.PLAYER1
-            
+
         if (row, col) in self.board.legal_moves(owner):
             self.board.place_move(owner, row, col)
+            self.board.push_state()
         else:
             print("Illegal move! " + str(move))
         self.board.text_board()
