@@ -30,7 +30,7 @@ function Replay(params) {
 		// This code path is taken by the Java wrapper for streaming replay and initializes only the
 		// basics. Most of the rest is faster done in native Java, than through Rhino.
 		this.meta = {};
-		this.meta['challenge'] = 'lifegame';
+		this.meta['challenge'] = 'go';
 		this.meta['replayformat'] = format;
 		this.meta['replaydata'] = {
 			'map' : {},
@@ -54,7 +54,9 @@ function Replay(params) {
             for (i = 0; i < this.players; i++)
                 this['scores'][n][i] = 0;
 
-            this['counts'][n] = [0];
+            this['counts'][n] = new Array(this.players);
+            for (i = 0; i < this.players; i++)
+                this['counts'][n][i] = 0;
 
             this['stores'][n] = new Array(this.players);
             for (i = 0; i < this.players; i++)
@@ -64,7 +66,7 @@ function Replay(params) {
         // calculate cell counts per turn per player
         for (i = 0; i < cells.length; i++) {
             for (n = cells[i][2]; n < cells[i][4]; n++) {
-                this['counts'][n][0]++;
+                this['counts'][n][cells[i][3]]++;
             }
         }
          // prepare caches
@@ -98,8 +100,8 @@ Replay.prototype.parseReplay = function(replay) {
 		replay = this.meta['replaydata'];
 	}
 	// validate meta data
-	if (this.meta['challenge'] !== 'lightsout') {
-		throw new Error('This visualizer is for the Lights Out challenge,' + ' but a "'
+	if (this.meta['challenge'] !== 'go') {
+		throw new Error('This visualizer is for the Go challenge,' + ' but a "'
 				+ this.meta['challenge'] + '" replay was loaded.');
 	} else if (this.meta['replayformat'] !== format) {
 		throw new Error('Replays in the format "' + this.meta['replayformat']
@@ -190,59 +192,82 @@ Replay.prototype.parseReplay = function(replay) {
 	this.players = replay['players'];
 
 	// map
-	var map = enterObj(replay, 'map');
-	keyIsArr(map, 'data', 1, undefined);
+    this.rows = this.cols = 19; // Go game defaults
+    if (replay['map']) {
+        var map = enterObj(replay, 'map');
+        keyIsArr(map, 'data', 1, undefined);
+        stack.push('data');
+        keyIsStr(map['data'], 0, 1, undefined);
+        stack.pop();
+        keyDefault(map, 'rows', map['data'].length, keyEq, [map['data'].length]);
+        this.rows = map['rows'];
+        keyDefault(map, 'cols', map['data'][0].length, keyEq, [map['data'][0].length]);
+        this.cols = map['cols'];
+        var mapdata = enterObj(map, 'data');
+        var regex = /[^-01]/;
+        for (var r = 0; r < mapdata.length; r++) {
+            keyIsStr(mapdata, r, map['cols'], map['cols']);
+            var maprow = String(mapdata[r]);
+            var i;
+            if ((i = maprow.search(regex)) !== -1 && !this.debug) {
+                throw new Error('Invalid character "' + maprow.charAt(i)
+                    + '" in map. Zero based row/col: ' + r + '/' + i);
+            }
+        }
+        stack.pop(); // pop 'data'
+        stack.pop(); // pop 'map'
+    }
+
+	// board positions for every turn
+    this.boards = [];
+	keyIsArr(replay, 'data', 0, undefined);
 	stack.push('data');
-	keyIsStr(map['data'], 0, 1, undefined);
-	stack.pop();
-	keyDefault(map, 'rows', map['data'].length, keyEq, [ map['data'].length ]);
-	this.rows = map['rows'];
-	keyDefault(map, 'cols', map['data'][0].length, keyEq, [ map['data'][0].length ]);
-	this.cols = map['cols'];
-	var mapdata = enterObj(map, 'data');
-	var regex = /[^-01]/;
-	for (var r = 0; r < mapdata.length; r++) {
-		keyIsStr(mapdata, r, map['cols'], map['cols']);
-		var maprow = String(mapdata[r]);
-        var i;
-		if ((i = maprow.search(regex)) !== -1 && !this.debug) {
-			throw new Error('Invalid character "' + maprow.charAt(i)
-					+ '" in map. Zero based row/col: ' + r + '/' + i);
-		}
-	}
-	stack.pop(); // pop 'data'
-	stack.pop(); // pop 'map'
-
-	// changes
-	keyIsArr(replay, 'changes', 0, undefined);
-	stack.push('changes');
-	var changes = replay['changes'];
-	for (var n = 0; n < changes.length; n++) {
-		keyIsArr(changes, n, 3, 3);
+	var turns = replay['data'];
+	for (var n=0; n < turns.length; n++) {
+		keyIsArr(turns, n, 3, 4);
 		stack.push(n);
-		var obj = changes[n];
-		// row must be within map height
-		keyRange(obj, 0, 0, map['rows'] - 1);
-		// col must be within map width
-		keyRange(obj, 1, 0, map['cols'] - 1);
-		// turn must be >= 0
-		keyRange(obj, 2, 0, undefined);
-		stack.pop();
 
-        //obj.row = obj[0];
-        //obj.col = obj[1];
-        //obj.spawn = obj[2];
-        //obj.owner = obj[3];
+        var turn_data = turns[n];
+        for (var i=0; i < turn_data.length; i++) {
+            keyIsArr(turn_data, i, 1, 3);
+            stack.push(i);
+
+            var obj = turn_data[i];
+            keyIsStr(obj, 0, 1, undefined);
+            if (obj[0] === 'updategamefield') {
+                keyIsStr(obj, 1, 1, undefined);
+                var board_cells = obj[1].split(',');
+
+                var board = [];
+                for (var row_num=0; row_num < this.rows; row_num++) {
+                    var row = [];
+                    for (var col_num=0; col_num < this.cols; col_num++) {
+                        var pos = row_num * this.cols + col_num;
+                        var cell_owner = Number(board_cells[pos]);
+                        row.push(cell_owner);
+                    }
+                    board.push(row);
+                }
+                this.boards.push(board);
+            }
+            stack.pop();
+        }
+		stack.pop();
 	}
 	stack.pop();
 
     this.duration = Math.max.apply(null, this.meta['playerturns']);
 };
 
+/**
+ * This method will parse board position of every turn
+ * and build a single list of all cells involved in entire game.
+ * For every cell it will add its spawn and death turns.
+ */
 Replay.prototype.buildCellsList = function() {
-    const ON = '1';
+    var EMPTY = 0;
     var row, col;
-    var turn, changes, turnChanges, change, cell, i;
+    var turn, changes, turnChanges, change, cell, owner, i;
     var cells = this.meta['replaydata']['cells'] = [];
 
     var state = new Array(this.rows);
@@ -250,34 +275,35 @@ Replay.prototype.buildCellsList = function() {
         state[row] = new Array(this.cols);
 
     // create cells for initial map position
-    var map = this.meta['replaydata']['map']['data'];
-    for (row = 0; row < this.rows; ++row)
+    var board = this.boards[0];
+    for (row = 0; row < this.rows; ++row) {
         for (col = 0; col < this.cols; ++col)
-            if (map[row][col] === ON) {
-                cell = [row, col, 0, null, this.duration + 1];
+            if (board[row][col]) { // board cell isn't empty
+                owner = board[row][col];
+                cell = [row, col, 0, owner-1, this.duration + 1];
                 cells.push(cell);
                 state[row][col] = cell;
             }
+    }
 
-    // apply list of changes
-    changes = this.meta.replaydata['changes'];
-    for (turn = 1; turn < this.duration + 1; ++turn) {
-        turnChanges = this.getTurnChanges(turn);
-        for (i = 0; i < turnChanges.length; ++i) {
-            change = turnChanges[i];
-            row = change[0];
-            col = change[1];
+    for (turn = 1 ; turn < this.duration; ++turn) {
+        board = this.boards[turn];
 
-            cell = state[row][col];
-            if (cell) {
-                // cell is ON, switching off
-                cell[4] = turn;
-                state[row][col] = null;
-            } else {
-                // cell is OFF, switching on
-                cell = [row, col, turn, null, this.duration + 1];
-                cells.push(cell);
-                state[row][col] = cell;
+        for (row = 0; row < this.rows; ++row) {
+            for (col = 0; col < this.cols; ++col) {
+                cell = state[row][col]; // cell state on previous turn
+                if (cell && !board[row][col]) {
+                    // cell died
+                    cell[4] = turn;
+                    state[row][col] = EMPTY;
+                } else if (!cell && board[row][col]) {
+                    // new cell born
+                    owner = board[row][col];
+                    cell = [row, col, turn, owner-1, this.duration + 1];
+                    cells.push(cell);
+                    state[row][col] = cell;
+                }
+
             }
         }
     }
@@ -447,8 +473,14 @@ Replay.prototype.getTurn = function(n) {
  */
 Replay.prototype.spawnCell = function(id, row, col, spawn, owner) {
 	var aniCell = this.aniCells[id] = new Cell(id, spawn - 0.8);
-	var color = owner? this.meta['playercolors'][owner]: DEFAULT_CELL_COLOR;
+	var color;
 	var f = aniCell.frameAt(spawn - 0.8);
+
+    if (owner === undefined)
+        color = DEFAULT_CELL_COLOR;
+    else
+        color = this.meta['playercolors'][owner]
+
 	aniCell.owner = owner;
 	f['x'] = col;
 	f['y'] = row;

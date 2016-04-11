@@ -390,20 +390,20 @@ CanvasElementCellsMap.prototype.draw = function() {
         this.ctx.restore();
     }
 
-    // draw indicator of player move
-    if (this.time > 0 && turn < replay.duration) {
-        this.ctx.lineWidth += 3;
-        player = replay.getCurrentPlayer(turn);
-        this.ctx.strokeStyle = replay.htmlPlayerColors[player];
-        changes = replay.getTurnChanges(turn + 1);
-        if (changes) {
-            change = changes[0];
-            mapX = Math.round(this.scale * change[1]);
-            mapY = Math.round(this.scale * change[0]);
-            this.ctx.strokeRect(mapX, mapY, this.scale, this.scale);
-        }
-        this.ctx.lineWidth -= 3;
-    }
+    //// draw indicator of player move
+    //if (this.time > 0 && turn < replay.duration) {
+    //    this.ctx.lineWidth += 3;
+    //    player = replay.getCurrentPlayer(turn);
+    //    this.ctx.strokeStyle = replay.htmlPlayerColors[player];
+    //    changes = replay.getTurnChanges(turn + 1);
+    //    if (changes) {
+    //        change = changes[0];
+    //        mapX = Math.round(this.scale * change[1]);
+    //        mapY = Math.round(this.scale * change[0]);
+    //        this.ctx.strokeRect(mapX, mapY, this.scale, this.scale);
+    //    }
+    //    this.ctx.lineWidth -= 3;
+    //}
 };
 
 /**
@@ -610,7 +610,7 @@ CanvasElementGraph.prototype.draw = function() {
 	// time line
 	this.ctx.textAlign = 'left';
 	for (i = values[0].length - 1; i >= 0; i--) {
-		this.ctx.strokeStyle = rgb_to_hex(DEFAULT_CELL_COLOR);
+		this.ctx.strokeStyle = replay.htmlPlayerColors[i];
 		this.ctx.beginPath();
 		this.ctx.moveTo(0.5, 0.5 + scaleY * (max - scaleFn(values[0][i])));
 		for (k = 1; k <= this.duration; k++) {
@@ -619,11 +619,11 @@ CanvasElementGraph.prototype.draw = function() {
 		this.ctx.stroke();
 	}
 	if (!this.appState.isStreaming && replay.meta['status']) {
-		for (i = replay.players - 1; i >= 0; i--) {
+		for (i = values[0].length - 1; i >= 0; i--) {
 			k = replay.meta['playerturns'][i];
 			this.ctx.beginPath();
 			x = 0.5 + k * scaleX;
-			y = 0.5 + scaleY * max;
+			y = 0.5 + scaleY * (max - scaleFn(values[k][i]));
 			this.ctx.moveTo(x, y);
 			txt = this.statusToGlyph(i);
 			tw = this.ctx.measureText(txt).width;
@@ -857,7 +857,7 @@ CanvasElementStats.prototype.drawColorBar = function(x, y, w, h, stats, bonusTex
 		ctx.save();
 		for (k = 0; k < list.length; k++) {
 			kIdx = appState.order[list[k]];
-			ctx.fillStyle = rgb_to_hex(DEFAULT_CELL_COLOR);
+			ctx.fillStyle = visState.replay.htmlPlayerColors[kIdx]
 			ctx.strokeStyle = STAT_COLOR;
 			ctx.lineWidth = 0.5;
 			if (div) {
