@@ -563,10 +563,12 @@ CanvasElementGraph.prototype.draw = function() {
 	var h = this.h - 1;
 	var replay = this.visState.replay;
 	var values = this.getStats(this.stats).values;
-	// Fixes the bug where the values would be scaled iteratively on every screen update in the live
-	// visualizer
-	var scaleFn = Math.sqrt;
-	this.ctx.fillStyle = SAND_COLOR;
+
+    // scale function determines how 'sensitive' graph is
+	var scaleFn = function(x) {return x};
+    // var scaleFn = Math.sqrt;
+
+    this.ctx.fillStyle = SAND_COLOR;
 	this.ctx.fillRect(0, 0, this.w, this.h);
 	this.ctx.font = '10px Arial,Sans';
 
