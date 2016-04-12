@@ -24,7 +24,7 @@ VisContainer = function(app) {
     /** @private */
     this.miniMap = undefined;
     /** @private */
-    this.counts = undefined;
+    this.scores = undefined;
     /** @private */
     this.turns = undefined;
     /** @private */
@@ -108,7 +108,7 @@ VisContainer.prototype.init = function(replay) {
     this.shiftedMap = new CanvasElementShiftedMap(this.app.state, this.state, this.cellsMap);
     this.miniMap = new CanvasElementMiniMap(this.app.state, this.state);
     if (this.app.state.options['decorated']) {
-        this.counts = new CanvasElementStats(this.app.state, this.state, '# of cells', 'counts', '500 steps');
+        this.scores = new CanvasElementStats(this.app.state, this.state, 'score', 'scores', '');
     }
 
     // calculate speed from duration and config settings
@@ -239,8 +239,8 @@ VisContainer.prototype.draw = function() {
     }
 
     if (this.state.replay.hasDuration && this.app.state.options['decorated']) {
-        if (this.counts.validate() || this.app.resizing) {
-            ctx.drawImage(this.counts.canvas, this.counts.x, this.counts.y);
+        if (this.scores.validate() || this.app.resizing) {
+            ctx.drawImage(this.scores.canvas, this.scores.x, this.scores.y);
         }
     }
 
@@ -275,10 +275,10 @@ VisContainer.prototype.resize = function() {
     // 1. timeline placement
     if (this.state.replay.hasDuration && this.app.state.options['decorated']) {
         // time line
-        this.counts.x = this.x;
-        this.counts.y = y;
-        this.counts.setSize(this.w, CanvasElementStats.MAX_HEIGHT);
-        y += this.counts.h;
+        this.scores.x = this.x;
+        this.scores.y = y;
+        this.scores.setSize(this.w, CanvasElementStats.MAX_HEIGHT);
+        y += this.scores.h;
     }
 
     // 2. visualizer placement
@@ -288,7 +288,7 @@ VisContainer.prototype.resize = function() {
             this.shiftedMap.y = y;
             var width = this.w - (this.shiftedMap.x - this.x);
             width = Math.min(width, this.app.main.canvas.width - RIGHT_PANEL_W - this.shiftedMap.x);
-            this.shiftedMap.setSize(width, this.h - this.counts.h - BOTTOM_PANEL_H);
+            this.shiftedMap.setSize(width, this.h - y - BOTTOM_PANEL_H);
 
             // playback buttons are center, unless they would exceed the right border of the map
             var bg = this.btnMgr.groups['playback'];
@@ -394,9 +394,9 @@ VisContainer.prototype.mouseMoved = function(mx, my) {
 		if (this.state.mouseOverVis && this.shiftedMap.contains(mx, my)) {
 		    this.app.hint = 'row ' + this.state.mouseRow + ' | col ' + this.state.mouseCol;
 		}
-		if (this.mouseDown === 1 && this.counts.graph.contains(this.mouseX, this.mouseY)) {
-			tick = this.mouseX - this.counts.graph.x;
-			tick /= (this.counts.graph.w - 1);
+		if (this.mouseDown === 1 && this.scores.graph.contains(this.mouseX, this.mouseY)) {
+			tick = this.mouseX - this.scores.graph.x;
+			tick /= (this.scores.graph.w - 1);
 			tick = Math.round(tick * this.state.replay.duration);
 			this.director.gotoTick(tick);
 		} else if (this.mouseDown === 2
@@ -437,7 +437,7 @@ VisContainer.prototype.mousePressed = function() {
 	if (this.app.state.options['interactive']) {
 		if (this.state.replay.hasDuration
 				&& this.app.state.options['decorated']
-				&& this.counts.graph.contains(this.mouseX, this.mouseY)) {
+				&& this.scores.graph.contains(this.mouseX, this.mouseY)) {
 			this.mouseDown = 1;
 		} else if (this.app.state.config['zoom'] !== 1
 				&& this.miniMap.contains(this.mouseX, this.mouseY)) {

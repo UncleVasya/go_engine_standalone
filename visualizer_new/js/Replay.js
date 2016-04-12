@@ -63,6 +63,18 @@ function Replay(params) {
                 this['stores'][n][i] = 0;
         }
 
+        for (i = 0; i < this.players; i++) {
+            // convert scores from per-player to per-turn
+            var player_scores = this.meta['replaydata']['scores'][i];
+            for (var k = 0; k < this.duration + 1; k++) {
+                this['scores'][k][i] = player_scores[k];
+            }
+        }
+
+        // TODO: discuss with Smiley how to deal with
+        // Player 1 having 361 score after placing 1st cell.
+        this.scores[1][0] = 1;
+
         // calculate cell counts per turn per player
         for (i = 0; i < cells.length; i++) {
             for (n = cells[i][2]; n < cells[i][4]; n++) {
@@ -217,6 +229,9 @@ Replay.prototype.parseReplay = function(replay) {
         stack.pop(); // pop 'data'
         stack.pop(); // pop 'map'
     }
+
+    // scores
+    keyIsArr(replay, 'scores', this.players, this.players);
 
 	// board positions for every turn
     this.boards = [];
