@@ -15,7 +15,6 @@ $import('Config');
 $import('Const');
 $import('Director');
 $import('ImageManager');
-$import('LifeSimulator');
 $import('Replay');
 $import('CanvasElement');
 

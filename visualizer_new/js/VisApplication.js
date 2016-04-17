@@ -841,9 +841,6 @@ VisApplication.prototype.addLeftPanel = function() {
         } else { // enable helper vis
             this.helperVis = new VisContainer(this);
             this.helperVis.init(this.state.replay);
-            // pre-calculate helper replays for the first and last turns
-            this.state.replay.getSimReplay(0);
-            this.state.replay.getSimReplay(this.state.replay.gamePhaseDuration);
         }
         this.resize(true);
         // synchronize helper vis and main vis

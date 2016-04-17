@@ -599,15 +599,6 @@ CanvasElementGraph.prototype.draw = function() {
 	this.ctx.lineTo(0.5 + scaleX * (this.duration + 1), h + 0.5);
 	this.ctx.stroke();
     
-    // draw game phaze divider
-    x = scaleX * (this.visState.replay.gamePhaseDuration) - scaleX;
-    this.ctx.lineWidth = 1;
-    this.ctx.beginPath();
-    this.ctx.moveTo(x, 0);
-    this.ctx.lineTo(x, 32.5 + h);
-    this.ctx.strokeStyle = '#DF0101'; // red
-    this.ctx.stroke();
-    
     scaleY = h / Math.max(max - min, 1);
 	// time line
 	this.ctx.textAlign = 'left';
