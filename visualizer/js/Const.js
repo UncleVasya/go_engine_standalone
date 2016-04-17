@@ -133,3 +133,17 @@ FONT = 'bold 19px Arial,Sans';
  * @const
  */
 HINT_HEIGHT = 22;
+
+/**
+ * Path to User profile. '~' is the placeholder for User id.
+ *
+ * @const
+ */
+DEFAULT_USER_URL = window.location.origin + '/player/~';
+
+/**
+ * Path to Match page. '~' is the placeholder for Match id.
+ *
+ * @const
+ */
+DEFAULT_GAME_URL = window.location.origin + '/replay.~';

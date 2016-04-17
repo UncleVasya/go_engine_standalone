@@ -273,10 +273,10 @@ Replay.prototype.parseReplay = function(replay) {
 
     // default Profile and Game urls for Smiley1983's TCP server
     if (this.meta['game_url'] === undefined) {
-        this.meta['game_url'] = window.location.origin + '/replay.~';
+        this.meta['game_url'] = DEFAULT_GAME_URL;
     }
     if (this.meta['user_url'] === undefined) {
-        this.meta['user_url'] = window.location.origin + '/player/~';
+        this.meta['user_url'] = DEFAULT_USER_URL;
     }
     if (this.meta['user_ids'] === undefined) {
         this.meta['user_ids'] = this.meta['playernames'];
