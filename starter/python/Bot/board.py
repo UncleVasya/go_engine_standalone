@@ -1,6 +1,6 @@
 import copy
 
-EMPTY, FRIEND, ENEMY, LIBERTY, KO = range(0, 5)
+EMPTY, FRIEND, ENEMY, LIBERTY, KO = [0, 1, 2, 3, -1]
 
 ADJACENT = [
     (-1, 0),
@@ -23,8 +23,8 @@ class Board:
     def int_to_cell(self, i):
         if i == 0:
             return EMPTY
-    #    elif i == 3:
-    #        return KO
+        elif i == -1:
+            return KO
         elif i == self.friend_id:
             return FRIEND
         else:
@@ -112,23 +112,28 @@ class Board:
         self.remove_pieces(to_remove)
 
     def not_ko(self, row, col):
-        if self.is_capture(row, col):
-            tcell = copy.deepcopy(self.cell)
-            tboard = Board(self.friend_id, self.width, self.height)
-            tboard.cell = tcell
-            tboard.place_move(FRIEND, row, col)
-            ko = False
-            for pboard in self.prev_cells:
-                if tboard.cells_match (pboard):
-                    ko = True
-            return not ko
-        else: return True
+        return self.cell[row][col] != KO
+        # This works for determining ko when it isn't given by the engine.
+        # With the new engine updates, it isn't necessary.
+#        if self.is_capture(row, col):
+#            tcell = copy.deepcopy(self.cell)
+#            tboard = Board(self.friend_id, self.width, self.height)
+#            tboard.cell = tcell
+#            tboard.place_move(FRIEND, row, col)
+#            ko = False
+#            for pboard in self.prev_cells:
+#                if tboard.cells_match (pboard):
+#                    ko = True
+#            return not ko
+#        else: return True
 
     def legal_moves(self):
         legal = []
         for (ri, row) in enumerate(self.cell):
             for (ci, cell) in enumerate(row):
-                if cell == EMPTY and self.not_suicide(ri, ci) and self.not_ko(ri, ci):
+                # Ko check already done by cell == EMPTY requirement when
+                # using new updated engine.
+                if cell == EMPTY and self.not_suicide(ri, ci): #and self.not_ko(ri, ci):
                     legal.append((ri, ci))
         return legal
         
