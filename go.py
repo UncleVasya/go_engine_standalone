@@ -237,9 +237,6 @@ class Go(Game):
 
         self.score = self.score_game()
         self.calc_significant_turns()
-        for i, s in enumerate(self.score):
-            self.score_history[i].append(s)
-        self.replay_data.append( self.get_state_changes(0, self.time_per_move) )
 
         # check if a rule change lengthens games needlessly
         if self.cutoff is None:
