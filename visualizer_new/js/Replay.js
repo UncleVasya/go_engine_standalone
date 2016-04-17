@@ -271,6 +271,17 @@ Replay.prototype.parseReplay = function(replay) {
 	}
 	stack.pop();
 
+    // default Profile and Game urls for Smiley1983's TCP server
+    if (this.meta['game_url'] === undefined) {
+        this.meta['game_url'] = window.location.origin + '/replay.~';
+    }
+    if (this.meta['user_url'] === undefined) {
+        this.meta['user_url'] = window.location.origin + '/player/~';
+    }
+    if (this.meta['user_ids'] === undefined) {
+        this.meta['user_ids'] = this.meta['playernames'];
+    }
+
     this.duration = Math.max.apply(null, this.meta['playerturns']);
 };
 
