@@ -22,15 +22,15 @@ def generate(data, generated_path):
     if len(mod_path) > 0 and mod_path[-1] != '/':
         mod_path += '/'
 
-    quote_re = re.compile("'")
-    newline_re = re.compile("\s", re.MULTILINE)
     insert_re = re.compile(r"## REPLAY PLACEHOLDER ##")
     path_re = re.compile(r"## PATH PLACEHOLDER ##")
     
     try:
-        json.loads(data)
-        data = quote_re.sub(r"\\\\'", data)
-        data = newline_re.sub("", data)
+        # This removes unecessary whitespaces from json,
+        # but leaves them inside values.
+        # before: [["update game round", 1], ["update game move", 3]]
+        # after: [["update game round",1],["update game move",3]]
+        data = json.dumps(json.loads(data), separators=(',', ':'))
     except ValueError:
         data = data.replace('\n', '\\\\n')
 

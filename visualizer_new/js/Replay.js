@@ -249,7 +249,7 @@ Replay.prototype.parseReplay = function(replay) {
 
             var obj = turn_data[i];
             keyIsStr(obj, 0, 1, undefined);
-            if (obj[0] === 'updategamefield') {
+            if (obj[0] === 'update game field') {
                 keyIsStr(obj, 1, 1, undefined);
                 var board_cells = obj[1].split(',');
 
