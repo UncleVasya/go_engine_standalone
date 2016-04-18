@@ -37,9 +37,9 @@ Config.prototype['cpu'] = 0.5;
 Config.prototype['helperVisEnabled'] = false;
 
 Config.prototype['ANIM_LEVELS'] = {
-    NONE: 0, // not in use now
-    LIMITED: 1, 
-    FULL: 2
+    NONE: 0,
+    FULL: 1,
+    LIMITED: 2 // not in use for Go
 };
 Config.prototype['animLevel'] = 1;
 

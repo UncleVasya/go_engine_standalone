@@ -330,9 +330,6 @@ Director.prototype.loop = function(delay) {
     var levels = this.vis.app.state.config['ANIM_LEVELS'];
     var draw = false;
     switch (animLevel) {
-        case levels['LIMITED']:
-            draw = (this.time < this.duration - 500) || this.inSlowMo;
-            break;
         case levels['FULL']:
             draw = true;
             break;

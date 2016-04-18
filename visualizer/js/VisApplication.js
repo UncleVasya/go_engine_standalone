@@ -828,9 +828,9 @@ VisApplication.prototype.addLeftPanel = function() {
     
     dlg = new Delegate(this, function() {
         var animLevel = this.state.config['animLevel'];
-        this.state.config['animLevel'] = (animLevel + 1) % 3;
+        this.state.config['animLevel'] = (animLevel + 1) % 2;
     });
-    bg.addButton(1, dlg, 'animation: 1. none, 2. limited, 3. full');
+    bg.addButton(1, dlg, 'animation: On/Off');
 
     dlg = new Delegate(this, function() {
         var enabled = this.state.config['helperVisEnabled'];
