@@ -27,6 +27,7 @@ function Config() {
 	this.load();
 }
 Config.prototype['fullscreen'] = false;
+Config.prototype['colorTheme'] = 0;
 Config.prototype['label'] = 0;
 Config.prototype['zoom'] = 1;
 Config.prototype['duration'] = 75;

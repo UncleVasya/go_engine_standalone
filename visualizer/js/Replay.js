@@ -26,6 +26,7 @@ function Replay(params) {
 	 * @private
 	 */
 	this.debug = params.debug || false;
+    this.color_theme = params.colors;
 	if (!params.replay && !params.meta) {
 		// This code path is taken by the Java wrapper for streaming replay and initializes only the
 		// basics. Most of the rest is faster done in native Java, than through Rhino.
@@ -397,6 +398,9 @@ Replay.prototype.addMissingMetaData = function(highlightPlayer) {
     if (rank) {
         rank_sorted = rank.slice().sort(function (a, b) { return a - b; });
     }
+
+    var PLAYER_COLORS = this.color_theme.PLAYER_COLORS;
+
     var adjust = 0;
 	for (i = 0; i < this.players; i++) {
 		if (!this.meta['playernames'][i]) {
@@ -506,7 +510,7 @@ Replay.prototype.spawnCell = function(id, row, col, spawn, owner) {
     var f = aniCell.frameAt(spawn - 0.9);
 
     if (owner === undefined)
-        color = DEFAULT_CELL_COLOR;
+        color = this.color_theme.DEFAULT_CELL_COLOR;
     else
         color = this.meta['playercolors'][owner];
 

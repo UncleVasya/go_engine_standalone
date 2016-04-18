@@ -146,11 +146,11 @@ CanvasElementAbstractMap.prototype.draw = function(resized, drawGrid) {
 	var cols = this.visState.replay.cols;
     var rowOpt = this.appState.options['row'];
 	var colOpt = this.appState.options['col'];
-	this.ctx.fillStyle = SAND_COLOR;
+	this.ctx.fillStyle = this.appState.colors.SAND_COLOR;
 	this.ctx.fillRect(0, 0, this.w, this.h);
     
     if (drawGrid) {
-        this.ctx.strokeStyle = '#fff';
+        this.ctx.strokeStyle = this.appState.colors.MAP_GRID_COLOR;
         this.ctx.lineWidth = 0.5;
         this.ctx.beginPath();
         for (row = 0; row <= rows; row++) {   
@@ -247,9 +247,12 @@ CanvasElementMap.extend(CanvasElementAbstractMap);
  * @returns {Boolean} true, if the internal state has changed
  */
 CanvasElementMap.prototype.checkState = function() {
-	if (this.scale !== this.appState.scale) {
+	if (this.scale !== this.appState.scale ||
+        this.colorTheme !== this.appState.config['colorTheme'])
+    {
 		this.invalid = true;
 		this.scale = this.appState.scale;
+        this.colorTheme = this.appState.config['colorTheme'];
 	}
 };
 
@@ -291,10 +294,11 @@ CanvasElementCellsMap.extend(CanvasElement);
 CanvasElementCellsMap.prototype.checkState = function() {
 	var i, kf;
 	var hash = undefined;
-	if (this.time !== this.visState.time
-        || this.scale !== this.appState.scale
-        || this.label !== this.appState.config['label']
-        || this.cellShape !== this.appState.config['cellShape'])
+	if (this.time !== this.visState.time ||
+        this.scale !== this.appState.scale ||
+        this.label !== this.appState.config['label'] ||
+        this.cellShape !== this.appState.config['cellShape'] ||
+        this.colorTheme !== this.appState.config['colorTheme'])
     {
 		this.invalid = true;
 		this.time = this.visState.time;
@@ -303,10 +307,13 @@ CanvasElementCellsMap.prototype.checkState = function() {
         this.cellShape = this.appState.config['cellShape'];
 
 		// per turn calculations
-		if (this.turn !== (this.time | 0)) {
+		if (this.turn !== (this.time | 0) ||
+            this.colorTheme !== this.appState.config['colorTheme'])
+        {
 			this.turn = this.time | 0;
 			this.cells = this.visState.replay.getTurn(this.turn);
 		}
+        this.colorTheme = this.appState.config['colorTheme'];
 
 		// interpolate cells for this point in time
 		this.drawStates = {};
@@ -495,7 +502,7 @@ CanvasElementShiftedMap.prototype.draw = function() {
     // draw map
 	mx += this.shiftX;
 	my += this.shiftY;
-    this.ctx.fillStyle = '#fff';
+    this.ctx.fillStyle = this.appState.colors.MAP_BACK_COLOR;
     this.ctx.fillRect(0,0,this.w,this.h);
 	this.ctx.drawImage(this.cellsMap.canvas, mx, my);
 	// fade out
@@ -574,9 +581,12 @@ CanvasElementGraph.prototype.statusToGlyph = function(i) {
  * @returns {Boolean} true, if the internal state has changed
  */
 CanvasElementGraph.prototype.checkState = function() {
-	if (this.duration !== this.visState.replay.duration && this.h > 0) {
+	if (this.duration !== this.visState.replay.duration && this.h > 0 ||
+        this.colorTheme !== this.appState.config['colorTheme'])
+    {
 		this.invalid = true;
 		this.duration = this.visState.replay.duration;
+        this.colorTheme = this.appState.config['colorTheme'];
 	}
 };
 
@@ -595,7 +605,7 @@ CanvasElementGraph.prototype.draw = function() {
 	var scaleFn = function(x) {return x};
     // var scaleFn = Math.sqrt;
 
-    this.ctx.fillStyle = SAND_COLOR;
+    this.ctx.fillStyle = this.appState.colors.GRAPH_BACK_COLOR;
 	this.ctx.fillRect(0, 0, this.w, this.h);
 	this.ctx.font = '10px Arial,Sans';
 
@@ -755,12 +765,16 @@ CanvasElementStats.prototype.setSize = function(width, height) {
  * @returns {Boolean} true, if the internal state has changed
  */
 CanvasElementStats.prototype.checkState = function() {
-	if ((this.showGraph && this.time !== this.visState.time) || this.time !== (this.visState.time | 0)
-			|| this.label !== (this.appState.config['label'] === 1)) {
+	if ((this.showGraph && this.time !== this.visState.time) ||
+        this.time !== (this.visState.time | 0) ||
+        this.label !== (this.appState.config['label'] === 1) ||
+        this.colorTheme !== this.appState.config['colorTheme'])
+    {
 		this.invalid = true;
 		this.time = this.visState.time;
 		this.turn = this.time | 0;
 		this.label = this.appState.config['label'] === 1;
+        this.colorTheme = this.appState.config['colorTheme'];
 	}
 };
 
@@ -773,12 +787,12 @@ CanvasElementStats.prototype.checkState = function() {
  */
 CanvasElementStats.prototype.draw = function(resized) {
 	var stats, text, x;
-	if (resized) {
-		this.ctx.fillStyle = BACK_COLOR;
+	//if (resized) {
+		this.ctx.fillStyle = this.appState.colors.STATS_BACK_COLOR;
 		// this.ctx.fillRect(0, 0, this.w, this.h);
 
 		// outlines
-		this.ctx.strokeStyle = STAT_COLOR;
+		this.ctx.strokeStyle = this.appState.colors.STAT_COLOR;
 		this.ctx.lineWidth = 2;
 		Shape.roundedRect(this.ctx, 0, 0, this.w, this.h, 1, 5);
 		if (this.showGraph) {
@@ -792,9 +806,9 @@ CanvasElementStats.prototype.draw = function(resized) {
 		this.ctx.font = FONT;
 		this.ctx.textAlign = 'left';
 		this.ctx.textBaseline = 'middle';
-		this.ctx.fillStyle = TEXT_COLOR;
+		this.ctx.fillStyle = this.appState.colors.TEXT_COLOR;
 		this.ctx.fillText(this.caption, 4, 14);
-	}
+	//}
 
 	// draw scores
 	stats = this.getStats(this.graph.stats, this.turn);
@@ -802,7 +816,7 @@ CanvasElementStats.prototype.draw = function(resized) {
 
 	// graph
 	if (this.showGraph) {
-		this.ctx.fillStyle = TEXT_GRAPH_COLOR;
+		this.ctx.fillStyle = this.appState.colors.TEXT_GRAPH_COLOR;
 		this.ctx.drawImage(this.graph.canvas, 2, 30);
 		// time indicator
 		x = (this.graph.w - 1) * this.time / this.graph.duration;
@@ -878,7 +892,7 @@ CanvasElementStats.prototype.drawColorBar = function(x, y, w, h, stats, bonusTex
 		for (k = 0; k < list.length; k++) {
 			kIdx = appState.order[list[k]];
 			ctx.fillStyle = visState.replay.htmlPlayerColors[kIdx]
-			ctx.strokeStyle = STAT_COLOR;
+			ctx.strokeStyle = appState.colors.STAT_COLOR;
 			ctx.lineWidth = 0.5;
 			if (div) {
 				wBarRaw = Math.abs(values[kIdx]) * pixels / div;
@@ -909,7 +923,7 @@ CanvasElementStats.prototype.drawColorBar = function(x, y, w, h, stats, bonusTex
 				}
 				ctx.textBaseline = 'middle';
 				ctx.font = 'bold 16px Monospace';
-				ctx.fillStyle = TEXT_COLOR; // '#fff';
+				ctx.fillStyle = appState.colors.TEXT_COLOR; // '#fff';
 				ctx.lineWidth = 0.5;
 				text = values[kIdx];
 				if (label) {
@@ -934,7 +948,7 @@ CanvasElementStats.prototype.drawColorBar = function(x, y, w, h, stats, bonusTex
 		ctx.restore();
 	};
 	this.ctx.save();
-	this.ctx.fillStyle = BACK_COLOR;
+	this.ctx.fillStyle = this.appState.colors.STATS_BACK_COLOR;
 	this.ctx.beginPath();
 	this.ctx.rect(x, y, w, h);
 	this.ctx.fill();
@@ -971,7 +985,7 @@ CanvasElementStats.prototype.drawColorBar = function(x, y, w, h, stats, bonusTex
 	// show positive scores
 	drawPart(this.ctx, wUsable, sum, positives, stats.values, this.appState, this.visState,false, this.label);
 	this.ctx.lineWidth = 2;
-	this.ctx.strokeStyle = STAT_COLOR;
+	this.ctx.strokeStyle = this.appState.colors.STAT_COLOR;
 	this.ctx.beginPath();
 	if (showBoni) {
 		xOffset = Math.ceil(xOffset) + 1;
@@ -983,7 +997,7 @@ CanvasElementStats.prototype.drawColorBar = function(x, y, w, h, stats, bonusTex
 		this.ctx.lineTo(xNegSep, y + h - 2);
 	}
 	this.ctx.stroke();
-	this.ctx.fillStyle = TEXT_COLOR;
+	this.ctx.fillStyle = this.appState.colors.TEXT_COLOR;
 	this.ctx.strokeStyle = '#fff';
 	this.ctx.font = 'bold 12px Monospace';
 	this.ctx.textBaseline = 'top';

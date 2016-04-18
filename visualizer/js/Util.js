@@ -179,7 +179,7 @@ var Shape = {
 	 * Draws the rounded rectangles used by buttons. Drawing attributes must be set before calling
 	 * this function.
 	 * 
-	 * @param {RenderingContext2D} ctx
+	 * @param {CanvasRenderingContext2D} ctx
 	 *        The rendering context to use.
 	 * @param {Number} x
 	 * @param {Number} y

@@ -73,6 +73,7 @@ VisApplication = function(container, options, w, h, configOverrides) {
 		if (configOverrides) this.state.config.overrideFrom(configOverrides);
 		/** @private */
 		this.state.options = options;
+        this.state.colors = COLOR_THEMES[this.state.config['colorTheme']];
 		// read URL parameters and store them in the parameters object
 		parameters = window.location.href;
 		if ((i = parameters.indexOf('?')) !== -1) {
@@ -472,8 +473,13 @@ VisApplication.prototype.loadParseReplay = function() {
 		var user = app.state.options['user'];
 		if (user === '') user = undefined;
 		if (app.replayStr) {
-			app.state.replay = new Replay({replay: app.replayStr, debug: debug, highlightUser: user});
-			app.replayStr = undefined;
+			app.state.replay = new Replay({
+                replay: app.replayStr,
+                debug: debug,
+                highlightUser: user,
+                colors: app.state.colors
+            });
+			//app.replayStr = undefined;
 		} else if (app.loading !== LoadingState.CLEANUP) {
 			throw new Error('Replay is undefined.');
 		}
@@ -848,6 +854,21 @@ VisApplication.prototype.addLeftPanel = function() {
         this.state.config['helperVisEnabled'] = !enabled;
     });
     bg.addButton(2, dlg, 'show/hide prognosis');
+
+    dlg = new Delegate(this, function() {
+        var colorTheme = this.state.config['colorTheme'];
+        this.state.config['colorTheme'] = (colorTheme + 1) % 2;
+        this.state.colors = COLOR_THEMES[this.state.config['colorTheme']];
+
+        this.state.replay.turns = [];
+        this.state.replay.aniCells = [];
+        this.state.replay.color_theme = COLOR_THEMES[this.state.config['colorTheme']];
+        this.state.replay.meta['playercolors'] = null;
+        this.state.replay.addMissingMetaData();
+
+        this.mainVis.director.draw();
+    });
+    bg.addButton(3, dlg, 'color theme: 1. Black-White 2. Orange-Blue');
 };
 
 /**
@@ -1441,6 +1462,7 @@ function AppState() {
 	this.cleanUp();
 	this.options = null;
 	this.config = new Config();
+    this.colors = null;
 }
 
 /**
