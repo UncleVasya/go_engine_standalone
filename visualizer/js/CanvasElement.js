@@ -421,8 +421,9 @@ CanvasElementCellsMap.prototype.draw = function() {
     }
 
     // draw indicator of player move
-    if (this.time > 0 && turn < replay.duration) {
-        var move = replay.moves[turn];
+    var indicator_turn = Math.round(this.time);
+    if (this.time > 0 && indicator_turn < replay.duration) {
+        var move = replay.moves[indicator_turn];
         if (move && move instanceof Array) {
             // TODO: on 'pass' indicate whole board
             xs = move[1] * this.scale - 4.5;

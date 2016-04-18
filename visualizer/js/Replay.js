@@ -351,19 +351,6 @@ Replay.prototype.buildCellsList = function() {
     }
 };
 
-Replay.prototype.getTurnChanges = function(turn) {
-    var changes = this.meta.replaydata['changes'];
-    changes = changes.filter(function(change) {
-       return change[2] === turn;
-    });
-
-    // make left-top cell the first
-    changes = changes.sort(function(a, b) {
-        return a[0] === b[0]? a[1] - b[1]: a[0] - b[0];
-    });
-    return changes;
-};
-
 Replay.prototype.getCurrentPlayer = function(turn) {
     return turn % 2;
 };
@@ -514,14 +501,14 @@ Replay.prototype.getTurn = function(n) {
  * @returns {Cell} The new animation cell object.
  */
 Replay.prototype.spawnCell = function(id, row, col, spawn, owner) {
-	var aniCell = this.aniCells[id] = new Cell(id, spawn - 0.8);
+    var aniCell = this.aniCells[id] = new Cell(id, spawn - 0.9);
 	var color;
-	var f = aniCell.frameAt(spawn - 0.8);
+    var f = aniCell.frameAt(spawn - 0.9);
 
     if (owner === undefined)
         color = DEFAULT_CELL_COLOR;
     else
-        color = this.meta['playercolors'][owner]
+        color = this.meta['playercolors'][owner];
 
 	aniCell.owner = owner;
 	f['x'] = col;
@@ -531,14 +518,20 @@ Replay.prototype.spawnCell = function(id, row, col, spawn, owner) {
 	f['g'] = color[1];
 	f['b'] = color[2];
 	if (spawn !== 0) {
-		f = aniCell.frameAt(spawn);
+		f = aniCell.frameAt(spawn - 0.775);
+        f['size'] = 1.0;
+		f = aniCell.frameAt(spawn - 0.710);
+		f['size'] = 1.5;
+		f = aniCell.frameAt(spawn - 0.645);
+		f['size'] = 0.7;
+		f = aniCell.frameAt(spawn - 0.520);
 	}
 	f['size'] = 1.0;
 	return aniCell;
 };
 
 /**
- * Animates an cell's death.<br>
+ * Animates a cell's death.<br>
  * <b>Called by the Java streaming visualizer.</b>
  * 
  * @private
@@ -548,20 +541,20 @@ Replay.prototype.spawnCell = function(id, row, col, spawn, owner) {
  *        The zero-based turn, that the cell died in.
  */
 Replay.prototype.killCell = function(aniCell, death) {
-	aniCell.fade('size', 0.0, death - 0.8, death);
+    var owner = aniCell.frameAt(death)['owner'];
+	var color = this.meta['playercolors'][owner];
+	aniCell.fade('r', 255, death - 0.500, death - 0.375);
+	aniCell.fade('g', 255, death - 0.500, death - 0.375);
+	aniCell.fade('b', 255, death - 0.500, death - 0.375);
+	aniCell.fade('r', color[0], death - 0.375, death - 0.250);
+	aniCell.fade('g', color[1], death - 0.375, death - 0.250);
+	aniCell.fade('b', color[2], death - 0.375, death - 0.250);
+	aniCell.fade('r', 0.0, death - 0.250, death);
+	aniCell.fade('g', 0.0, death - 0.250, death);
+	aniCell.fade('b', 0.0, death - 0.250, death);
+	aniCell.fade('size', 0.7, death - 0.500, death - 0.375);
+	aniCell.fade('size', 0.0, death - 0.250, death);
 	aniCell.death = death;
-};
-
-Replay.prototype.getAliveCells = function(turn) {
-    if (!this.aliveCells[turn]) {
-        this.aliveCells[turn] = [];
-        this.meta['replaydata']['cells'].forEach(function(cell) {
-			if (cell[2] <= turn && cell[4] > turn) {
-                this.aliveCells[turn].push(cell);
-            }
-		}, this);
-    }
-    return this.aliveCells[turn];
 };
     
 /**
