@@ -17,6 +17,27 @@ function CanvasElement() {
 }
 
 /**
+ * Draws a red marker on the map.
+ * Used when coordinates are given in the replay URL.
+ * Or to indicate last move.
+ *
+ * @param {Number}
+ *        xs the x pixel position
+ * @param {Number}
+ *        ys the y pixel position
+ */
+CanvasElement.prototype.redFocusRectFun = function(xs, ys) {
+	var x, y, w, i;
+	for (i = 0; i < 5; i++) {
+		this.ctx.strokeStyle = 'rgba(255,0,0,' + (i + 1) / 5 + ')';
+		w = this.scale + 9 - 2 * i;
+		x = xs + i;
+		y = ys + i;
+		this.ctx.strokeRect(x, y, w, w);
+	}
+};
+
+/**
  * Sets the size of this canvas and invalidates it, if an actual change is detected.
  * 
  * @param {Number} width
@@ -123,6 +144,8 @@ CanvasElementAbstractMap.prototype.draw = function(resized, drawGrid) {
     var row, col;
 	var rows = this.visState.replay.rows;
 	var cols = this.visState.replay.cols;
+    var rowOpt = this.appState.options['row'];
+	var colOpt = this.appState.options['col'];
 	this.ctx.fillStyle = SAND_COLOR;
 	this.ctx.fillRect(0, 0, this.w, this.h);
     
@@ -140,6 +163,13 @@ CanvasElementAbstractMap.prototype.draw = function(resized, drawGrid) {
         }
     }
     this.ctx.stroke();
+
+    // marker
+	if (!isNaN(rowOpt) && !isNaN(colOpt)) {
+		xs = (colOpt % cols) * this.scale - 4.5;
+		ys = (rowOpt % rows) * this.scale - 4.5;
+        this.redFocusRectFun(xs, ys);
+	}
 };
 
 /**
@@ -300,7 +330,7 @@ CanvasElementCellsMap.prototype.checkState = function() {
  */
 CanvasElementCellsMap.prototype.draw = function() {
     var halfScale, drawList, hash, n, kf, d, fontSize, label, caption, order;
-    var changes, change, i, mapX, mapY;
+    var xs, ys;
     var w, dx, dy;
     var player;
     var turn = Math.floor(this.time);
@@ -390,20 +420,16 @@ CanvasElementCellsMap.prototype.draw = function() {
         this.ctx.restore();
     }
 
-    //// draw indicator of player move
-    //if (this.time > 0 && turn < replay.duration) {
-    //    this.ctx.lineWidth += 3;
-    //    player = replay.getCurrentPlayer(turn);
-    //    this.ctx.strokeStyle = replay.htmlPlayerColors[player];
-    //    changes = replay.getTurnChanges(turn + 1);
-    //    if (changes) {
-    //        change = changes[0];
-    //        mapX = Math.round(this.scale * change[1]);
-    //        mapY = Math.round(this.scale * change[0]);
-    //        this.ctx.strokeRect(mapX, mapY, this.scale, this.scale);
-    //    }
-    //    this.ctx.lineWidth -= 3;
-    //}
+    // draw indicator of player move
+    if (this.time > 0 && turn < replay.duration) {
+        var move = replay.moves[turn];
+        if (move && move instanceof Array) {
+            // TODO: on 'pass' indicate whole board
+            xs = move[1] * this.scale - 4.5;
+            ys = move[0] * this.scale - 4.5;
+            this.redFocusRectFun(xs, ys);
+        }
+    }
 };
 
 /**

@@ -233,22 +233,30 @@ Replay.prototype.parseReplay = function(replay) {
     // scores
     keyIsArr(replay, 'scores', this.players, this.players);
 
-	// board positions for every turn
+	// board positions and moves for every turn
     this.boards = [];
+    this.moves = []
 	keyIsArr(replay, 'data', 0, undefined);
 	stack.push('data');
 	var turns = replay['data'];
 	for (var n=0; n < turns.length; n++) {
-		keyIsArr(turns, n, 3, 4);
+        this.moves.push(null);
+
+        // check that turn data is an array
+        keyIsArr(turns, n, 3, 4);
 		stack.push(n);
 
         var turn_data = turns[n];
         for (var i=0; i < turn_data.length; i++) {
+            // check that turndata element is an array
             keyIsArr(turn_data, i, 1, 3);
             stack.push(i);
 
+            // check that turndata element caption is a string
             var obj = turn_data[i];
             keyIsStr(obj, 0, 1, undefined);
+
+            // board position
             if (obj[0] === 'update game field') {
                 keyIsStr(obj, 1, 1, undefined);
                 var board_cells = obj[1].split(',');
@@ -264,6 +272,14 @@ Replay.prototype.parseReplay = function(replay) {
                     board.push(row);
                 }
                 this.boards.push(board);
+            }
+
+            //last move
+            if (obj[0] === 'update game last_move') {
+                this.moves[n] = [obj[1], [obj[2]]];
+            }
+            else if (obj[0] === 'update game last_move pass') {
+                this.moves[n] = 'pass';
             }
             stack.pop();
         }
