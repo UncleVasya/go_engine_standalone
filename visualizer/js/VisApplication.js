@@ -866,6 +866,10 @@ VisApplication.prototype.addLeftPanel = function() {
         this.state.replay.meta['playercolors'] = null;
         this.state.replay.addMissingMetaData();
 
+        // recreate player buttons with new colors
+        this.addPlayerButtons();
+        this.resize(true);
+
         this.mainVis.director.draw();
     });
     bg.addButton(3, dlg, 'color theme: 1. Black-White 2. Orange-Blue');
