@@ -153,9 +153,14 @@ VisContainer.prototype.addPlaybackPanel = function() {
 
     dlg = new Delegate(this, function() {
         var stop = Math.ceil(this.state.time) - 1;
-        this.director.slowmoTo(stop);
+
+        var levels = this.app.state.config['ANIM_LEVELS'];
+        if (this.app.state.config['animLevel'] == levels.NONE)
+            this.director.gotoTick(stop);
+        else
+            this.director.slowmoTo(stop);
     });
-    bg.addButton(5, dlg, 'play one move/attack phase backwards');
+    bg.addButton(5, dlg, 'play one turn backwards');
     bg.addSpace(64);
 
     dlg = new Delegate(this.director, this.director.playStop);
@@ -164,9 +169,14 @@ VisContainer.prototype.addPlaybackPanel = function() {
 
     dlg = new Delegate(this, function() {
         var stop = Math.floor(this.state.time) + 1;
-        this.director.slowmoTo(stop);
+
+        var levels = this.app.state.config['ANIM_LEVELS'];
+        if (this.app.state.config['animLevel'] == levels.NONE)
+            this.director.gotoTick(stop);
+        else
+            this.director.slowmoTo(stop);
     });
-    bg.addButton(6, dlg, 'play one move/attack phase');
+    bg.addButton(6, dlg, 'play one turn ');
     bg.addSpace(32);
 
     dlg = new Delegate(this, function() {
