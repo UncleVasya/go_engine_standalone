@@ -112,9 +112,9 @@ Director.prototype.slowmoTo = function(time) {
 		this.stopAt = effectiveTime;
 		wasPlaying = this.playing();
 		if (this.vis.state.time < effectiveTime) {
-			this.speed = +1;
+			this.speed = +2;
 		} else {
-			this.speed = -1;
+			this.speed = -2;
 		}
 		if (!wasPlaying) {
             this.inSlowMo = true;

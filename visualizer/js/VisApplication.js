@@ -1424,7 +1424,7 @@ Options = function() {
 	this['row'] = NaN;
 	this['turn'] = NaN;
 	this['user'] = '';
-	this['loop'] = true;
+	this['loop'] = false;
 };
 
 /**
