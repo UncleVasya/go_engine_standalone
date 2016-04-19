@@ -26,7 +26,7 @@ function Replay(params) {
 	 * @private
 	 */
 	this.debug = params.debug || false;
-    this.color_theme = params.colors;
+    this.colorTheme = COLOR_THEMES[params.colorTheme];
 	if (!params.replay && !params.meta) {
 		// This code path is taken by the Java wrapper for streaming replay and initializes only the
 		// basics. Most of the rest is faster done in native Java, than through Rhino.
@@ -310,7 +310,7 @@ Replay.prototype.parseReplay = function(replay) {
 Replay.prototype.buildCellsList = function() {
     var EMPTY = 0;
     var row, col;
-    var turn, changes, turnChanges, change, cell, owner, i;
+    var turn, cell, owner;
     var cells = this.meta['replaydata']['cells'] = [];
 
     var state = new Array(this.rows);
@@ -399,7 +399,7 @@ Replay.prototype.addMissingMetaData = function(highlightPlayer) {
         rank_sorted = rank.slice().sort(function (a, b) { return a - b; });
     }
 
-    var PLAYER_COLORS = this.color_theme.PLAYER_COLORS;
+    var PLAYER_COLORS = this.colorTheme.PLAYER_COLORS;
 
     var adjust = 0;
 	for (i = 0; i < this.players; i++) {
@@ -434,6 +434,35 @@ Replay.prototype.addMissingMetaData = function(highlightPlayer) {
 		this.htmlPlayerColors[i] += INT_TO_HEX[this.meta['playercolors'][i][1]];
 		this.htmlPlayerColors[i] += INT_TO_HEX[this.meta['playercolors'][i][2]];
 	}
+};
+
+/**
+ * Sets a new color scheme for replay.
+ *
+ * This clears cached cells and animation frames
+ * cause they were colored with an old scheme.
+ *
+ * Also this re-setups player colors.
+ *
+ * @param {Number} colorTheme
+ *        color theme id
+ *
+ * @param {Number} highlightPlayer
+ *        The index of a player who's default color should be exchanged with the first
+ *        player's color. This is useful to identify a selected player by its color (the first one
+ *        in the PĹAYER_COLORS array).
+ *
+ */
+Replay.prototype.setColorTheme = function(colorTheme, highlightPlayer) {
+    this.colorTheme = COLOR_THEMES[colorTheme];
+
+    // clear cached colored cells
+    this.turns = [];
+    this.aniCells = [];
+
+    // re-setup player colors
+    this.meta['playercolors'] = null;
+    this.addMissingMetaData(highlightPlayer);
 };
 
 /**
@@ -510,7 +539,7 @@ Replay.prototype.spawnCell = function(id, row, col, spawn, owner) {
     var f = aniCell.frameAt(spawn - 0.9);
 
     if (owner === undefined)
-        color = this.color_theme.DEFAULT_CELL_COLOR;
+        color = this.colorTheme.DEFAULT_CELL_COLOR;
     else
         color = this.meta['playercolors'][owner];
 

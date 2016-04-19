@@ -477,7 +477,7 @@ VisApplication.prototype.loadParseReplay = function() {
                 replay: app.replayStr,
                 debug: debug,
                 highlightUser: user,
-                colors: app.state.colors
+                colorTheme: app.state.config['colorTheme']
             });
 			//app.replayStr = undefined;
 		} else if (app.loading !== LoadingState.CLEANUP) {
@@ -854,14 +854,12 @@ VisApplication.prototype.addLeftPanel = function() {
 
     dlg = new Delegate(this, function() {
         var colorTheme = this.state.config['colorTheme'];
-        this.state.config['colorTheme'] = (colorTheme + 1) % 2;
-        this.state.colors = COLOR_THEMES[this.state.config['colorTheme']];
+        colorTheme = (colorTheme + 1) % 2; // next color theme
 
-        this.state.replay.turns = [];
-        this.state.replay.aniCells = [];
-        this.state.replay.color_theme = COLOR_THEMES[this.state.config['colorTheme']];
-        this.state.replay.meta['playercolors'] = null;
-        this.state.replay.addMissingMetaData();
+        this.state.config['colorTheme'] = colorTheme;
+        this.state.colors = COLOR_THEMES[colorTheme];
+
+        this.state.replay.setColorTheme(colorTheme);
 
         // recreate player buttons with new colors
         this.addPlayerButtons();
