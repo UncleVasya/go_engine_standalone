@@ -686,8 +686,8 @@ VisApplication.prototype.tryStart = function() {
 		this.setFullscreen(this.state.config['fullscreen']);
 		if (this.state.replay.hasDuration) {
 			if (!isNaN(this.state.options['turn'])) {
-				this.mainVis.director.gotoTick(this.state.options['turn'] - 1);
-                //this.helperVis.director.gotoTick(this.state.options['turn'] - 1);
+				this.mainVis.director.gotoTick(this.state.options['turn']);
+                //this.helperVis.director.gotoTick(this.state.options['turn']);
 			} else {
 				this.mainVis.director.play();
 			}
