@@ -825,10 +825,7 @@ VisApplication.prototype.addLeftPanel = function() {
     dlg = new Delegate(this, function() {
         var shape = this.state.config['cellShape'];
         this.state.config['cellShape'] = (shape + 1) % 2;
-        this.mainVis.director.draw();
-        if (this.helperVis) {
-            this.helperVis.director.draw();
-        }
+        this.resize(true);
     });
     bg.addButton(0, dlg, 'cell shape: 1. rectangles, 2. circles');
     
