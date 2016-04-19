@@ -364,6 +364,7 @@ VisContainer.prototype.setZoom = function(zoom) {
 	this.map.x = (((this.shiftedMap.w - this.map.w) >> 1) + this.shiftedMap.x) | 0;
 	this.map.y = (((this.shiftedMap.h - this.map.h) >> 1) + this.shiftedMap.y) | 0;
 	this.cellsMap.setSize(this.map.w, this.map.h);
+    this.shiftedMap.draw(true);
 };
 
 /**
