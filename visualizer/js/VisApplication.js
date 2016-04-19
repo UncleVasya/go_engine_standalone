@@ -582,6 +582,12 @@ VisApplication.prototype.tryStart = function() {
         }
 
         this.mainVis.init(this.state.replay);
+        this.mainVis.director.onTurnChange = function(time) {
+            if (!app.helperVis) return; // helper vis disabled, nothing to do here
+
+            var turn = Math.floor(time);
+            app.helperVis.director.gotoTick(turn);
+        };
         if (this.helperVis) {
             this.helperVis.init(app.state.replay);
         }
@@ -687,7 +693,6 @@ VisApplication.prototype.tryStart = function() {
 		if (this.state.replay.hasDuration) {
 			if (!isNaN(this.state.options['turn'])) {
 				this.mainVis.director.gotoTick(this.state.options['turn']);
-                //this.helperVis.director.gotoTick(this.state.options['turn']);
 			} else {
 				this.mainVis.director.play();
 			}
@@ -850,7 +855,7 @@ VisApplication.prototype.addLeftPanel = function() {
         this.mainVis.director.onTurnChange(this.mainVis.director.time);
         this.state.config['helperVisEnabled'] = !enabled;
     });
-    bg.addButton(2, dlg, 'show/hide prognosis');
+    bg.addButton(2, dlg, 'I have 3D glasses!');
 
     dlg = new Delegate(this, function() {
         var colorTheme = this.state.config['colorTheme'];
