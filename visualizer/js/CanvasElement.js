@@ -198,10 +198,13 @@ CanvasElementMiniMap.extend(CanvasElementAbstractMap);
  * @returns {Boolean} true, if the internal state has changed
  */
 CanvasElementMiniMap.prototype.checkState = function() {
-	if ((this.visState.time | 0) !== this.turn) {
+	if ((this.visState.time | 0) !== this.turn ||
+        this.colorTheme !== this.appState.config['colorTheme'])
+    {
 		this.invalid = true;
 		this.turn = (this.visState.time | 0);
 		this.cells = this.visState.replay.getTurn(this.turn);
+        this.colorTheme = this.appState.config['colorTheme'];
 	}
 };
 
