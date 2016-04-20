@@ -1308,16 +1308,17 @@ VisApplication.prototype.mouseExited = function() {
  *          handled the key
  */
 VisApplication.prototype.keyPressed = function(key) {
-	var d = this.director;
+	var d = this.mainVis.director;
+    var visState = this.mainVis.state;
 	var tryOthers = true;
 	if (!this.state.options['embedded']) {
 		tryOthers = false;
 		switch (key) {
 		case Key.PGUP:
-			d.gotoTick(Math.ceil(this.state.time) - 10);
+			d.gotoTick(Math.ceil(visState.time) - 10);
 			break;
 		case Key.PGDOWN:
-			d.gotoTick(Math.floor(this.state.time) + 10);
+			d.gotoTick(Math.floor(visState.time) + 10);
 			break;
 		case Key.HOME:
 			d.gotoTick(0);
@@ -1335,10 +1336,10 @@ VisApplication.prototype.keyPressed = function(key) {
 			d.playStop();
 			break;
 		case Key.LEFT:
-			d.gotoTick(Math.ceil(this.state.time) - 1);
+			d.gotoTick(Math.ceil(visState.time) - 1);
 			break;
 		case Key.RIGHT:
-			d.gotoTick(Math.floor(this.state.time) + 1);
+			d.gotoTick(Math.floor(visState.time) + 1);
 			break;
 		case Key.PLUS:
 		case Key.PLUS_OPERA:
