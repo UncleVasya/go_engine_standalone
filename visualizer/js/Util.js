@@ -60,6 +60,8 @@ Math.dist_2 = function(x1, y1, x2, y2, w, h) {
 var Key = {
 	LEFT : 37,
 	RIGHT : 39,
+    UP : 38,
+    DOWN : 40,
 	SPACE : 32,
 	PGUP : 33,
 	PGDOWN : 34,
