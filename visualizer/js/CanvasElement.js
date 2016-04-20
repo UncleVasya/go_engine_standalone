@@ -489,7 +489,7 @@ CanvasElementShiftedMap.prototype.checkState = function() {
  * Draws the visible portion of the map with cells. If the map is smaller than the view area it is
  * repeated in a darker shade on both sides.
  */
-CanvasElementShiftedMap.prototype.draw = function() {
+CanvasElementShiftedMap.prototype.draw = function(resized) {
     var dx, dy, cutoff, winner;
 	var replay = this.visState.replay;
     var mx = (this.w - this.cellsMap.w) >> 1;
@@ -505,9 +505,13 @@ CanvasElementShiftedMap.prototype.draw = function() {
     // draw map
 	mx += this.shiftX;
 	my += this.shiftY;
-    this.ctx.fillStyle = this.appState.colors.MAP_BACK_COLOR;
-    this.ctx.fillRect(0,0,this.w,this.h);
-	this.ctx.drawImage(this.cellsMap.canvas, mx, my);
+
+    if (resized) {
+        this.ctx.fillStyle = this.appState.colors.MAP_BACK_COLOR;
+        this.ctx.fillRect(0,0,this.w,this.h);
+    }
+
+    this.ctx.drawImage(this.cellsMap.canvas, mx, my);
 	// fade out
 	if (this.fade) {
 		this.ctx.fillStyle = this.fade;
@@ -773,11 +777,17 @@ CanvasElementStats.prototype.checkState = function() {
         this.label !== (this.appState.config['label'] === 1) ||
         this.colorTheme !== this.appState.config['colorTheme'])
     {
-		this.invalid = true;
-		this.time = this.visState.time;
-		this.turn = this.time | 0;
-		this.label = this.appState.config['label'] === 1;
-        this.colorTheme = this.appState.config['colorTheme'];
+        this.invalid = true;
+        this.time = this.visState.time;
+        this.turn = this.time | 0;
+        this.label = this.appState.config['label'] === 1;
+
+        if (this.colorTheme !== this.appState.config['colorTheme']) {
+            // color theme change is as sever as a size change:
+            // we want to redraw everything
+            this.resized = true;
+            this.colorTheme = this.appState.config['colorTheme'];
+        }
 	}
 };
 
@@ -790,7 +800,7 @@ CanvasElementStats.prototype.checkState = function() {
  */
 CanvasElementStats.prototype.draw = function(resized) {
 	var stats, text, x;
-	//if (resized) {
+	if (resized ) {
 		this.ctx.fillStyle = this.appState.colors.STATS_BACK_COLOR;
 		// this.ctx.fillRect(0, 0, this.w, this.h);
 
@@ -811,7 +821,7 @@ CanvasElementStats.prototype.draw = function(resized) {
 		this.ctx.textBaseline = 'middle';
 		this.ctx.fillStyle = this.appState.colors.TEXT_COLOR;
 		this.ctx.fillText(this.caption, 4, 14);
-	//}
+	}
 
 	// draw scores
 	stats = this.getStats(this.graph.stats, this.turn);
