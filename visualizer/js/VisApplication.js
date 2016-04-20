@@ -1314,10 +1314,10 @@ VisApplication.prototype.keyPressed = function(key) {
 	if (!this.state.options['embedded']) {
 		tryOthers = false;
 		switch (key) {
-		case Key.PGUP:
+		case Key.DOWN:
 			d.gotoTick(Math.ceil(visState.time) - 10);
 			break;
-		case Key.PGDOWN:
+		case Key.UP:
 			d.gotoTick(Math.floor(visState.time) + 10);
 			break;
 		case Key.HOME:
