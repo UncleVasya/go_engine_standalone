@@ -490,7 +490,8 @@ CanvasElementShiftedMap.prototype.checkState = function() {
  * repeated in a darker shade on both sides.
  */
 CanvasElementShiftedMap.prototype.draw = function(resized) {
-    var dx, dy, cutoff, winner;
+    var dx, dy, winner;
+    var cutoff, drawCutoff;
 	var replay = this.visState.replay;
     var mx = (this.w - this.cellsMap.w) >> 1;
 	var my = (this.h - this.cellsMap.h) >> 1;
@@ -506,9 +507,15 @@ CanvasElementShiftedMap.prototype.draw = function(resized) {
 	mx += this.shiftX;
 	my += this.shiftY;
 
-    if (resized) {
+    cutoff = replay.meta['replaydata']['cutoff'];
+    drawCutoff = this.time > this.visState.replay.duration - 1 && cutoff;
+
+    if (resized || this.cutoffDrawn && !drawCutoff) {
+        // full re-draw if canvas resized or
+        // if we had cutoff drawn but no longer need it
         this.ctx.fillStyle = this.appState.colors.MAP_BACK_COLOR;
         this.ctx.fillRect(0,0,this.w,this.h);
+        this.cutoffDrawn = false;
     }
 
     this.ctx.drawImage(this.cellsMap.canvas, mx, my);
@@ -518,7 +525,7 @@ CanvasElementShiftedMap.prototype.draw = function(resized) {
 		this.ctx.fillRect(mx, my, this.cellsMap.w, this.cellsMap.h);
 	}
 	// game cut-off reason
-	cutoff = replay.meta['replaydata']['cutoff'];
+
 	if (this.time > this.visState.replay.duration - 1 && cutoff) {
         if (cutoff === 'rankstabilized') {
             winner = replay.meta['rank'][0];
@@ -536,6 +543,7 @@ CanvasElementShiftedMap.prototype.draw = function(resized) {
 		this.ctx.strokeText(cutoff, dx, dy);
 		this.ctx.fillStyle = '#fff';
 		this.ctx.fillText(cutoff, dx, dy);
+        this.cutoffDrawn = true;
 	}
 };
 
