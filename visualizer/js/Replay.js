@@ -321,7 +321,7 @@ Replay.prototype.buildCellsList = function() {
     var board = this.boards[0];
     for (row = 0; row < this.rows; ++row) {
         for (col = 0; col < this.cols; ++col)
-            if (board[row][col]) { // board cell isn't empty
+            if (board[row][col] > 0) { // board cell isn't empty
                 owner = board[row][col];
                 cell = [row, col, 0, owner-1, this.duration + 1];
                 cells.push(cell);
@@ -335,11 +335,11 @@ Replay.prototype.buildCellsList = function() {
         for (row = 0; row < this.rows; ++row) {
             for (col = 0; col < this.cols; ++col) {
                 cell = state[row][col]; // cell state on previous turn
-                if (cell && !board[row][col]) {
+                if (cell && board[row][col] < 1) {
                     // cell died
                     cell[4] = turn;
                     state[row][col] = EMPTY;
-                } else if (!cell && board[row][col]) {
+                } else if (!cell && board[row][col] > 0) {
                     // new cell born
                     owner = board[row][col];
                     cell = [row, col, turn, owner-1, this.duration + 1];
