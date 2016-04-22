@@ -169,9 +169,10 @@ class Go(Game):
         self.board.text_board()
         print("\n")
         (player_id, col, row) = move
-        owner = board.PLAYER2
-        if player_id == 0:
-            owner = board.PLAYER1
+        owner = self.board.get_owner(player_id)
+        # owner = board.PLAYER2
+        # if player_id == 0:
+        #     owner = board.PLAYER1
 
         if (row, col) in self.board.legal_moves(owner):
             self.last_move = (row, col)
