@@ -1,5 +1,4 @@
 import random
-import sys
 
 class Bot:
 
@@ -14,8 +13,6 @@ class Bot:
         legal = self.game.field.legal_moves()
         desirable = list(filter(self.game.field.not_fill_own_eye, legal))
         if len(desirable) == 0:
-            #print("pass")
-            sys.stderr.write("pass")
             self.game.issue_order_pass()
         else:
             chosen = random.choice(desirable)

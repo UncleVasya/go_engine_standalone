@@ -1,4 +1,4 @@
-# Compatible with python2 and python3 - delete this line to use python2
+# python3
 
 import sys
 
