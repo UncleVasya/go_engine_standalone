@@ -92,6 +92,10 @@ class Go(Game):
         visible_updates.append([]) # newline
         return '\n'.join(' '.join(map(str,s)) for s in visible_updates)
 
+    def other_player(self, player):
+        if player == 0: return 1
+        else: return 0
+
     def get_state_changes(self, player, time_to_move):
         """ Return a list of all transient objects on the map.
 
@@ -104,7 +108,7 @@ class Go(Game):
         self.board.unmark_ko()
         if self.last_move:
             row, col = self.last_move
-            changes.extend([['update game last_move', row, col]])
+            changes.extend([['update ' + self.use_player_names[self.other_player(player)] + ' last_move', row, col]])
         elif self.turn > 1:
             changes.extend([['update game last_move pass']])
         return changes
