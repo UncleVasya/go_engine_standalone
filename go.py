@@ -110,7 +110,7 @@ class Go(Game):
             row, col = self.last_move
             changes.extend([['update ' + self.use_player_names[self.other_player(player)] + ' last_move place_move', row, col]])
         elif self.turn > 1:
-            changes.extend([['update ' + self.use_player_names[self.other_player(player)]  + 'last_move pass']])
+            changes.extend([['update ' + self.use_player_names[self.other_player(player)]  + ' last_move pass']])
         return changes
 
     def parse_orders(self, player, lines):
