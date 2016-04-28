@@ -146,7 +146,10 @@ CanvasElementAbstractMap.prototype.draw = function(resized, drawGrid) {
 	var cols = this.visState.replay.cols;
     var rowOpt = this.appState.options['row'];
 	var colOpt = this.appState.options['col'];
-	this.ctx.fillStyle = this.appState.colors.SAND_COLOR;
+    var xs, ys;
+    var halfScale = 0.5 * this.scale;
+
+    this.ctx.fillStyle = this.appState.colors.SAND_COLOR;
 	this.ctx.fillRect(0, 0, this.w, this.h);
     
     if (drawGrid) {
@@ -161,8 +164,19 @@ CanvasElementAbstractMap.prototype.draw = function(resized, drawGrid) {
             this.ctx.moveTo(this.scale * (col - 0.5), 0);
             this.ctx.lineTo(this.scale * (col - 0.5), this.scale * rows);
         }
+        this.ctx.stroke();
+
+        // draw GO board marks
+        this.ctx.fillStyle = this.appState.colors.MAP_GRID_COLOR;
+        for (row = 3; row <= rows; row += 6)
+            for (col = 3; col <= cols; col += 6) {
+                xs = col * this.scale + halfScale;
+                ys = row * this.scale + halfScale;
+                this.ctx.beginPath();
+                this.ctx.arc(xs, ys, 0.1 * this.scale, 0, 2 * Math.PI, false);
+                this.ctx.fill();
+            }
     }
-    this.ctx.stroke();
 
     // marker
 	if (!isNaN(rowOpt) && !isNaN(colOpt)) {
@@ -434,12 +448,37 @@ CanvasElementCellsMap.prototype.draw = function() {
     var indicator_turn = Math.ceil(this.time);
     if (this.time > 0 && indicator_turn < replay.duration) {
         var move = replay.moves[indicator_turn];
-        if (move && move instanceof Array) {
-            // TODO: on 'pass' indicate whole board
-            xs = move[1] * this.scale - 4.5;
-            ys = move[0] * this.scale - 4.5;
-            this.redFocusRectFun(xs, ys);
+        if (move) {
+            if (move instanceof Array) {
+                xs = move[1] * this.scale - 4.5;
+                ys = move[0] * this.scale - 4.5;
+                this.redFocusRectFun(xs, ys);
+            } else { // this move is a Pass
+                this.ctx.strokeStyle = 'rgb(255,0,0)';
+                this.ctx.lineWidth += 3;
+                this.ctx.strokeRect(0,0, this.w, this.h);
+                this.ctx.lineWidth -= 3;
+            }
         }
+    }
+
+    // draw KO cells
+    var ko = replay.koCells[turn];
+    if (ko) {
+        xs = ko.col * this.scale + halfScale;
+        ys = ko.row * this.scale + halfScale;
+        this.ctx.strokeStyle = this.appState.colors.KO_COLOR;  // '#008ec0';
+        this.ctx.lineWidth += 1;
+        this.ctx.beginPath();
+        // cirle
+        this.ctx.arc(xs, ys, halfScale, 0, 2 * Math.PI, false);
+        // X mark
+        this.ctx.moveTo(xs + Math.cos(Math.PI/4) * halfScale, ys + Math.sin(Math.PI/4) * halfScale);
+        this.ctx.lineTo(xs + Math.cos(5*Math.PI/4) * halfScale, ys + Math.sin(5*Math.PI/4) * halfScale);
+        this.ctx.moveTo(xs + Math.cos(3*Math.PI/4) * halfScale, ys + Math.sin(3*Math.PI/4) * halfScale);
+        this.ctx.lineTo(xs + Math.cos(7*Math.PI/4) * halfScale, ys + Math.sin(7*Math.PI/4) * halfScale);
+        this.ctx.stroke();
+        this.ctx.lineWidth -= 1;
     }
 };
 

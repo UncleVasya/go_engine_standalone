@@ -118,7 +118,12 @@ COLOR_THEMES = [
         /**
          * color of map grid lines
          */
-        MAP_GRID_COLOR: rgb_to_hex(hsl_to_rgb([ 0, 0, 0]))
+        MAP_GRID_COLOR: rgb_to_hex(hsl_to_rgb([ 0, 0, 0])),
+
+        /**
+         * color of KO positions
+         */
+        KO_COLOR: rgb_to_hex(hsl_to_rgb([ 196, 100, 38 ]))
     },
 
     // ORANGE-BLUE THEME
@@ -147,7 +152,9 @@ COLOR_THEMES = [
 
         MAP_BACK_COLOR: rgb_to_hex(hsl_to_rgb([ 0, 0, 100 ])),
 
-        MAP_GRID_COLOR: rgb_to_hex(hsl_to_rgb([ 0, 0, 100]))
+        MAP_GRID_COLOR: rgb_to_hex(hsl_to_rgb([ 0, 0, 100 ])),
+
+        KO_COLOR: rgb_to_hex(hsl_to_rgb([ 196, 100, 38 ]))
     }
 ];
 
