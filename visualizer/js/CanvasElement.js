@@ -470,8 +470,6 @@ CanvasElementCellsMap.prototype.draw = function() {
         this.ctx.strokeStyle = this.appState.colors.KO_COLOR;  // '#008ec0';
         this.ctx.lineWidth += 1;
         this.ctx.beginPath();
-        // cirle
-        this.ctx.arc(xs, ys, halfScale, 0, 2 * Math.PI, false);
         // X mark
         this.ctx.moveTo(xs + Math.cos(Math.PI/4) * halfScale, ys + Math.sin(Math.PI/4) * halfScale);
         this.ctx.lineTo(xs + Math.cos(5*Math.PI/4) * halfScale, ys + Math.sin(5*Math.PI/4) * halfScale);
