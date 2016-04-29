@@ -306,28 +306,20 @@ Replay.prototype.parseReplay = function(replay) {
  * This method will parse board position of every turn
  * and build a single list of all cells involved in entire game.
  * For every cell it will add its spawn and death turns.
+ *
+ * This will also build list of KO positions.
  */
 Replay.prototype.buildCellsList = function() {
     var EMPTY = 0;
     var row, col;
     var turn, cell, owner;
     var cells = this.meta['replaydata']['cells'] = [];
+    var koCells = this.koCells = new Array(this.duration);
+    var board;
 
     var state = new Array(this.rows);
     for (row = 0; row < this.rows; ++row)
         state[row] = new Array(this.cols);
-
-    // create cells for initial map position
-    var board = this.boards[0];
-    for (row = 0; row < this.rows; ++row) {
-        for (col = 0; col < this.cols; ++col)
-            if (board[row][col] > 0) { // board cell isn't empty
-                owner = board[row][col];
-                cell = [row, col, 0, owner-1, this.duration + 1];
-                cells.push(cell);
-                state[row][col] = cell;
-            }
-    }
 
     for (turn = 1 ; turn < this.duration; ++turn) {
         board = this.boards[turn];
@@ -346,7 +338,10 @@ Replay.prototype.buildCellsList = function() {
                     cells.push(cell);
                     state[row][col] = cell;
                 }
-
+                // check for KO
+                if (board[row][col] === -1) {
+                    koCells[turn] = {row: row, col: col};
+                }
             }
         }
     }
