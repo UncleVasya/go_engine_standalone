@@ -157,12 +157,12 @@ CanvasElementAbstractMap.prototype.draw = function(resized, drawGrid) {
         this.ctx.lineWidth = 0.5;
         this.ctx.beginPath();
         for (row = 0; row <= rows; row++) {   
-            this.ctx.moveTo(0, this.scale * (row - 0.5));
-            this.ctx.lineTo(this.scale * cols, this.scale * (row - 0.5));
+            this.ctx.moveTo(halfScale, this.scale * (row - 0.5));
+            this.ctx.lineTo(this.scale * cols - halfScale, this.scale * (row - 0.5));
         }
         for (col = 0; col <= cols; col++) {   
-            this.ctx.moveTo(this.scale * (col - 0.5), 0);
-            this.ctx.lineTo(this.scale * (col - 0.5), this.scale * rows);
+            this.ctx.moveTo(this.scale * (col - 0.5), halfScale);
+            this.ctx.lineTo(this.scale * (col - 0.5), this.scale * rows - halfScale);
         }
         this.ctx.stroke();
 
