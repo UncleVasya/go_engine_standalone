@@ -108,7 +108,7 @@ class Go(Game):
         self.board.unmark_ko()
         if self.last_move:
             row, col = self.last_move
-            changes.extend([['update ' + self.use_player_names[self.other_player(player)] + ' last_move place_move', row, col]])
+            changes.extend([['update ' + self.use_player_names[self.other_player(player)] + ' last_move place_move', col, row]])
         elif self.turn > 1:
             changes.extend([['update ' + self.use_player_names[self.other_player(player)]  + ' last_move pass']])
         return changes
