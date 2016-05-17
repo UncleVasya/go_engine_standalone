@@ -236,7 +236,11 @@ Replay.prototype.parseReplay = function(replay) {
 
 	// board positions and moves for every turn
     this.boards = [];
-    this.moves = []
+    this.moves = [];
+
+    var place_move = new RegExp('update (.*) last_move place_move');
+    var pass = new RegExp('update (.*) last_move pass');
+
 	keyIsArr(replay, 'data', 0, undefined);
 	stack.push('data');
 	var turns = replay['data'];
@@ -276,10 +280,10 @@ Replay.prototype.parseReplay = function(replay) {
             }
 
             //last move
-            if (obj[0] === 'update game last_move') {
+            if (place_move.test(obj[0])) {  // player placed a stone
                 this.moves[n] = [obj[1], [obj[2]]];
             }
-            else if (obj[0] === 'update game last_move pass') {
+            else if (pass.test(obj[0])) {  // player passed
                 this.moves[n] = 'pass';
             }
             stack.pop();
