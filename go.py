@@ -92,6 +92,12 @@ class Go(Game):
         visible_updates.append([]) # newline
         return '\n'.join(' '.join(map(str,s)) for s in visible_updates)
 
+    def current_player(self):
+        """ Return player number who is active on this turn
+
+        """
+        return self.turn % 2
+
     def other_player(self, player):
         return (player + 1) % 2
 
@@ -269,7 +275,7 @@ class Go(Game):
         self.calc_significant_turns()
 
         ### append turn to replay
-        self.replay_data.append( self.get_state_changes(0, self.time_per_move) )
+        self.replay_data.append( self.get_state_changes(self.current_player(), self.time_per_move) )
 
     def calc_significant_turns(self):
         ranking_bots = [sorted(self.score, reverse=True).index(x) for x in self.score]
