@@ -92,9 +92,14 @@ class Go(Game):
         visible_updates.append([]) # newline
         return '\n'.join(' '.join(map(str,s)) for s in visible_updates)
 
+    def current_player(self):
+        """ Return player number who is active on this turn
+
+        """
+        return self.turn % 2
+
     def other_player(self, player):
-        if player == 0: return 1
-        else: return 0
+        return (player + 1) % 2
 
     def get_state_changes(self, player, time_to_move):
         """ Return a list of all transient objects on the map.
@@ -110,7 +115,7 @@ class Go(Game):
             row, col = self.last_move
             changes.extend([['update ' + self.use_player_names[self.other_player(player)] + ' last_move place_move', col, row]])
         elif self.turn > 1:
-            changes.extend([['update ' + self.use_player_names[self.other_player(player)]  + ' last_move pass']])
+            changes.extend([['update ' + self.use_player_names[self.other_player(player)] + ' last_move pass']])
         return changes
 
     def parse_orders(self, player, lines):
@@ -271,7 +276,7 @@ class Go(Game):
         self.calc_significant_turns()
 
         ### append turn to replay
-        self.replay_data.append( self.get_state_changes(0, self.time_per_move) )
+        self.replay_data.append( self.get_state_changes(self.current_player(), self.time_per_move) )
 
     def calc_significant_turns(self):
         ranking_bots = [sorted(self.score, reverse=True).index(x) for x in self.score]

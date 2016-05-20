@@ -450,8 +450,8 @@ CanvasElementCellsMap.prototype.draw = function() {
         var move = replay.moves[indicator_turn];
         if (move) {
             if (move instanceof Array) {
-                xs = move[1] * this.scale - 4.5;
-                ys = move[0] * this.scale - 4.5;
+                xs = move[0] * this.scale - 4.5;
+                ys = move[1] * this.scale - 4.5;
                 this.redFocusRectFun(xs, ys);
             } else { // this move is a Pass
                 this.ctx.strokeStyle = 'rgb(255,0,0)';
