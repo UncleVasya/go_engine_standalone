@@ -31,6 +31,7 @@ def generate(data, generated_path):
         # before: [["update game round", 1], ["update game move", 3]]
         # after: [["update game round",1],["update game move",3]]
         data = json.dumps(json.loads(data), separators=(',', ':'))
+        data = data.replace('\\', '\\\\\\\\')  # replaces 1 backslash with 4 for escaping
     except ValueError:
         data = data.replace('\n', '\\\\n')
 
