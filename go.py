@@ -25,7 +25,7 @@ class Go(Game):
             self.timebank = int(options['timebank'])
         self.time_per_move = int(options['time_per_move'])
         self.player_names = options['player_names']
-        self.use_player_names = ["Player1", "Player2"]
+        self.use_player_names = ["player1", "player2"]
         self.engine_seed = options.get('engine_seed',
             randint(-maxint-1, maxint))
         self.player_seed = options.get('player_seed',
@@ -106,6 +106,7 @@ class Go(Game):
 
         """
         changes = []
+#        if self.turn > 0:
         changes.extend([['update game round', int(self.turn / 2)]])
         changes.extend([['update game move', self.turn]])
         self.board.mark_ko(player)
