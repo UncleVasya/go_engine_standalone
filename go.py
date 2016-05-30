@@ -107,8 +107,8 @@ class Go(Game):
         """
         changes = []
 #        if self.turn > 0:
-        changes.extend([['update game round', int(self.turn / 2)]])
-        changes.extend([['update game move', self.turn]])
+        changes.extend([['update game round', int(self.turn / 2) + 1]])
+        changes.extend([['update game move', self.turn + 1]])
         self.board.mark_ko(player)
         changes.extend([['update game field', self.board.to_csv()]])
         self.board.unmark_ko()
