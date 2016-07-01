@@ -74,6 +74,7 @@ class Go(Game):
 
         ### collect turns for the replay
         self.replay_data = []
+        self.score = self.board.count_scores()
 
     def output_cell (self, cell):
         return str(cell)
@@ -117,6 +118,8 @@ class Go(Game):
             changes.extend([['update ' + self.use_player_names[self.other_player(player)] + ' last_move place_move', col, row]])
         elif self.turn > 1:
             changes.extend([['update ' + self.use_player_names[self.other_player(player)] + ' last_move pass']])
+        else:
+            changes.extend([['update ' + self.use_player_names[self.other_player(player)] + ' last_move Null']])
         return changes
 
     def parse_orders(self, player, lines):
@@ -321,13 +324,16 @@ class Go(Game):
         pen = '\n'.join(' '.join(map(str,s)) for s in result)
         return pen #+ message #+ 'ready\n'
 
+    def string_score(self, v):
+        return ("%.1f" % v)
+
     def get_player_state(self, player, time_to_move):
         """ Get state changes visible to player
 
             Used by engine to send state to bots
         """
-        points_update0 = "update " + self.use_player_names[0] + " points " + str(self.score[0]) + "\n"
-        points_update1 = "update " + self.use_player_names[1] + " points " + str(self.score[1]) + "\n"
+        points_update0 = "update " + self.use_player_names[0] + " points " + self.string_score(self.score[0]) + "\n"
+        points_update1 = "update " + self.use_player_names[1] + " points " + self.string_score(self.score[1]) + "\n"
         return self.render_changes(player, time_to_move) + points_update1 + points_update0 + 'action move ' +  str(int(time_to_move * 1000)) + '\n'
 
     def is_alive(self, player):
