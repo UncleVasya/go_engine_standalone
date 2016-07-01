@@ -25,7 +25,7 @@ class Go(Game):
             self.timebank = int(options['timebank'])
         self.time_per_move = int(options['time_per_move'])
         self.player_names = options['player_names']
-        self.use_player_names = ["Player1", "Player2"]
+        self.use_player_names = ["player1", "player2"]
         self.engine_seed = options.get('engine_seed',
             randint(-maxint-1, maxint))
         self.player_seed = options.get('player_seed',
@@ -92,21 +92,31 @@ class Go(Game):
         visible_updates.append([]) # newline
         return '\n'.join(' '.join(map(str,s)) for s in visible_updates)
 
+    def current_player(self):
+        """ Return player number who is active on this turn
+
+        """
+        return self.turn % 2
+
+    def other_player(self, player):
+        return (player + 1) % 2
+
     def get_state_changes(self, player, time_to_move):
         """ Return a list of all transient objects on the map.
 
         """
         changes = []
-        changes.extend([['update game round', int(self.turn / 2)]])
-        changes.extend([['update game move', self.turn]])
+#        if self.turn > 0:
+        changes.extend([['update game round', int(self.turn / 2) + 1]])
+        changes.extend([['update game move', self.turn + 1]])
         self.board.mark_ko(player)
         changes.extend([['update game field', self.board.to_csv()]])
         self.board.unmark_ko()
         if self.last_move:
             row, col = self.last_move
-            changes.extend([['update game last_move', row, col]])
+            changes.extend([['update ' + self.use_player_names[self.other_player(player)] + ' last_move place_move', col, row]])
         elif self.turn > 1:
-            changes.extend([['update game last_move pass']])
+            changes.extend([['update ' + self.use_player_names[self.other_player(player)] + ' last_move pass']])
         return changes
 
     def parse_orders(self, player, lines):
@@ -165,9 +175,10 @@ class Go(Game):
         self.board.text_board()
         print("\n")
         (player_id, col, row) = move
-        owner = board.PLAYER2
-        if player_id == 0:
-            owner = board.PLAYER1
+        owner = self.board.get_owner(player_id)
+        # owner = board.PLAYER2
+        # if player_id == 0:
+        #     owner = board.PLAYER1
 
         if (row, col) in self.board.legal_moves(owner):
             self.last_move = (row, col)
@@ -237,9 +248,6 @@ class Go(Game):
 
         self.score = self.score_game()
         self.calc_significant_turns()
-        for i, s in enumerate(self.score):
-            self.score_history[i].append(s)
-        self.replay_data.append( self.get_state_changes(0, self.time_per_move) )
 
         # check if a rule change lengthens games needlessly
         if self.cutoff is None:
@@ -269,7 +277,7 @@ class Go(Game):
         self.calc_significant_turns()
 
         ### append turn to replay
-        self.replay_data.append( self.get_state_changes(0, self.time_per_move) )
+        self.replay_data.append( self.get_state_changes(self.current_player(), self.time_per_move) )
 
     def calc_significant_turns(self):
         ranking_bots = [sorted(self.score, reverse=True).index(x) for x in self.score]

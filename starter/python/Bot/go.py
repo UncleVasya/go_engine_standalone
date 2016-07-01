@@ -71,11 +71,19 @@ class Go():
                                 self.field = board.Board(self.your_botid, self.field_width, self.field_height)
                             self.field.parse(tokens[3])
                             self.field.push_state()
+
+                    elif key1 in self.player_names:
+                        key2 = tokens[2]
                         if key2 == "last_move":
                             if tokens[3] == "pass":
                                 self.last_move = None
+                            elif tokens[3] == "place_move":
+                                self.last_move = (int(tokens[4]), int(tokens[5]))
+                        elif key2 == "points":
+                            if key1 == self.your_bot:
+                                self.my_points = float(tokens[3])
                             else:
-                                self.last_move = (int(tokens[3]), int(tokens[4]))
+                                self.opponent_points = float(tokens[3])
                 elif key0 == "action" and tokens[1] == "move":
                     self.last_timebank = int(tokens[2])
                     # Launching bot logic happens after setup finishes

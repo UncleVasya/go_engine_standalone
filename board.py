@@ -14,6 +14,12 @@ KOMI = 7.5
 
 class Board:
 
+    def get_owner(self, player):
+        owner = PLAYER2
+        if player == 0:
+            owner = PLAYER1
+        return owner
+
     def __init__(self, width, height):
         self.width = width
         self.height = height
@@ -205,10 +211,11 @@ class Board:
         return ",".join(arr)
 
     def mark_ko(self, player):
+        owner = self.get_owner(player)
         ko_cells = []
         for (ir, row) in enumerate(self.cell):
             for (ic, cell) in enumerate(row):
-                if cell == EMPTY and not self.not_ko(player + 1, ir, ic):
+                if cell == EMPTY and not self.not_ko(owner, ir, ic):
                     ko_cells.append((ir, ic))
         for (row, col) in ko_cells:
             self.cell[row][col] = KO

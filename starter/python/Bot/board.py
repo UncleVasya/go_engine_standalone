@@ -57,7 +57,7 @@ class Board:
     def not_suicide(self, row, col):
         dfs = DepthFirstSearch(self)
         dfs.flood_fill_default(FRIEND, row, col)
-        if EMPTY in dfs.reached:
+        if EMPTY in dfs.reached or KO in dfs.reached:
             return True
         else:
             return self.is_capture(row, col)
@@ -68,10 +68,10 @@ class Board:
         prev_color = self.cell[row][col]
         self.cell[row][col] = FRIEND
         for (valid, (ar, ac)) in self.get_adjacent(row, col):
-            if valid and self.cell[row][col] != self.cell[ar][ac] and self.cell[ar][ac] != EMPTY:
+            if valid and self.cell[row][col] != self.cell[ar][ac] and self.cell[ar][ac] != EMPTY and self.cell[ar][ac] != KO:
                 dfs.refresh()
                 dfs.flood_fill(ar, ac)
-                if EMPTY not in dfs.reached:
+                if EMPTY not in dfs.reached and KO not in dfs.reached:
                     is_cap = True
         self.cell[row][col] = prev_color
         return is_cap

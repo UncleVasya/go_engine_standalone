@@ -370,7 +370,7 @@ def run_game(game, botcmds, options):
         # of communicating the bot IDs to the report processor
         print("botcmds:")
         print(botcmds)
-        bot_ids = [cmd[0].split('/')[-2] for cmd in botcmds]
+        bot_ids = [os.path.split(cmd[0])[-2] for cmd in botcmds]
         # Previous version used cmd[0] for the line above, check.
         game_result['bot_ids'] = bot_ids
 
