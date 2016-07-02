@@ -446,7 +446,7 @@ CanvasElementCellsMap.prototype.draw = function() {
 
     // draw indicator of player move
     var indicator_turn = Math.ceil(this.time);
-    if (this.time > 0 && indicator_turn < replay.duration) {
+    if (this.time > 0 && indicator_turn <= replay.duration) {
         var move = replay.moves[indicator_turn];
         if (move) {
             if (move instanceof Array) {

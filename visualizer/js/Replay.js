@@ -325,7 +325,7 @@ Replay.prototype.buildCellsList = function() {
     for (row = 0; row < this.rows; ++row)
         state[row] = new Array(this.cols);
 
-    for (turn = 1 ; turn < this.duration; ++turn) {
+    for (turn = 1 ; turn <= this.duration; ++turn) {
         board = this.boards[turn];
 
         for (row = 0; row < this.rows; ++row) {
